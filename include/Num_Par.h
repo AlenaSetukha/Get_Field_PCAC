@@ -9,6 +9,6 @@ public:
     double T, dt; //Временной отрезок, шаг по времени 
     double kappa, M;
 
-    Num_Par(const char* filename);
+    Num_Par(const std::string &filename);
 };
 #endif

@@ -3,6 +3,7 @@
 
 #include <complex>
 #include <string>
+#include <vector>
 
 #include "K.h"
 #include "element_geom.h"
@@ -29,14 +30,16 @@
 // points_for_field - точки, в которых считается поле: [n_points][3]
 // field - комплексное поле в каждой точке(результат): [n_points][3]
 
-void get_field_ideal(const double*** cells, const double** norm,
+template<size_t CellPoints>
+void get_field_ideal(const std::vector<double[CellPoints][3]> &cells, const std::vector<double[3]> &norm,
         const std::complex<double>** j_vec,
         const double max_diag, const int num_frm,
         const ED_Par& ed_param, const Num_Par& num_param,
         const double* e0,
-        const int n_points, const double** points_for_field,
-        std::complex<double>** field)
+        const std::vector<double[3]> &points_for_field,
+        std::vector<std::complex<double>[3]> &field)
 {
+    size_t n_points = points_for_field.size();
     //Инициализация параметров
     //f_simple_pot_G
     integral_par f_simple_pot_G_par(1, num_param.n_start, num_param.p_max, num_param.eps);//1,10,1,0.001
@@ -47,18 +50,17 @@ void get_field_ideal(const double*** cells, const double** norm,
     f_par param_seg(max_diag * num_param.rs, ed_param.k[0]);
 
 //========================Вычисление поля===========================
-    std::complex<double> deg, deg1, u[3], cur_res3[3];
 
-    double cell_j[4][3], norm_j[3];
-    std::complex<double> j_vec_j[3];
-
-
-    for (int i = 0; i < n_points; i++)
-    {
+#pragma omp parallel for
+    for (size_t i = 0; i < n_points; i++)
+    {   
+        std::complex<double> u[3], cur_res3[3];
+        double cell_j[CellPoints][3], norm_j[3];
+        std::complex<double> j_vec_j[3];
         field[i][0] = 0., field[i][1] = 0., field[i][2] = 0.;
         for (int j = 0; j < num_frm; j++)
         {
-            for (int g = 0; g < 4; g++)
+            for (int g = 0; g < CellPoints; g++)
             {
                 cell_j[g][0] = cells[j][g][0];
                 cell_j[g][1] = cells[j][g][1];
@@ -86,7 +88,7 @@ void get_field_ideal(const double*** cells, const double** norm,
 
 void save_field_as_gv(const std::string filename_out,
     const int n1, const int n2,
-    const std::complex<double>** field)
+    std::vector<std::complex<double>[3]> &field)
 {
     //Создание файлов для записи электрического поля
     std::ofstream fout_u_real(filename_out + "_real.gv");              //Электрическое поле, действительная часть
