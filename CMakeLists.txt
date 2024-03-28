@@ -38,6 +38,6 @@ add_library(field_lib STATIC ${SOURCE})
 add_executable(get_field main_field_ideal.cpp)
 
 if(OPENMP_FOUND)
-target_link_libraries(get_field PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(get_field PUBLIC OpenMP::OpenMP_CXX)
 endif()
 target_link_libraries(get_field PUBLIC field_lib)

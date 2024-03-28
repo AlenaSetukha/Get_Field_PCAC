@@ -46,18 +46,7 @@ int main(int argc, char **argv)
     fout.close();
 
 //========================Задания токов H,V========================
-    std::complex<double>** j_vec_H = new std::complex<double>*[a.num_frm];
-    for (int i = 0; i < a.num_frm; i++)
-    {
-        j_vec_H[i] = new std::complex<double>[3];
-    }
-
-    std::complex<double>** j_vec_V = new std::complex<double>*[a.num_frm];
-    for (int i = 0; i < a.num_frm; i++)
-    {
-        j_vec_V[i] = new std::complex<double>[3];
-    }
-
+    std::vector<std::complex<double>[3]> j_vec_H(a.num_frm), j_vec_V(a.num_frm);
     get_j_from_files(input_dir + "j//j_H_real.gv", input_dir + "/j/j_H_image.gv", j_vec_H);
     get_j_from_files(input_dir + "j//j_V_real.gv", input_dir + "/j/j_V_image.gv", j_vec_V);
 
@@ -103,9 +92,9 @@ int main(int argc, char **argv)
 
     std::vector<std::complex<double>[3]> field_H(num_points), field_V(num_points);
 
-    get_field_ideal(cells, norm, (const std::complex<double>**)j_vec_H, a.max_diag, a.num_frm,
+    get_field_ideal(cells, norm, j_vec_H, a.max_diag, a.num_frm,
                 ed_param, num_param_field, e0_H.e0, points_for_field, field_H);
-    get_field_ideal(cells, norm, (const std::complex<double>**)j_vec_V, a.max_diag, a.num_frm,
+    get_field_ideal(cells, norm, j_vec_V, a.max_diag, a.num_frm,
                 ed_param, num_param_field, e0_V.e0, points_for_field, field_V);
 
 //====================Сохранение в формате .gv=====================
@@ -113,17 +102,6 @@ int main(int argc, char **argv)
     save_field_as_gv(result_dir + "field/E_V", n1, n2, field_V);
 
 //=========================Очистка памяти===================
-
-    for (int i = 0; i < a.num_frm; i++) {
-        delete[] j_vec_V[i];
-    }
-    delete[] j_vec_V;
-
-    for (int i = 0; i < a.num_frm; i++) {
-        delete[] j_vec_H[i];
-    }
-    delete[] j_vec_H;
-
 
 
     auto end = std::chrono::high_resolution_clock::now();

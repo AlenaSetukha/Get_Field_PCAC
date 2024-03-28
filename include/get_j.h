@@ -20,6 +20,6 @@ void  get_j_basis(const TGrid_DC_Full& a, const std::complex<double>* b, const s
 
 
 //-------------------------Дополнительная функция считывания готовых токов-----------------------
-void get_j_from_files(const std::string filename_real, const std::string filename_image, std::complex<double>**  j_vec);
+void get_j_from_files(const std::string filename_real, const std::string filename_image, std::vector<std::complex<double>[3]> &j_vec);
 #endif
 

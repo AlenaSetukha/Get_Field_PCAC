@@ -32,7 +32,7 @@
 
 template<size_t CellPoints>
 void get_field_ideal(const std::vector<double[CellPoints][3]> &cells, const std::vector<double[3]> &norm,
-        const std::complex<double>** j_vec,
+        const std::vector<std::complex<double>[3]> &j_vec,
         const double max_diag, const int num_frm,
         const ED_Par& ed_param, const Num_Par& num_param,
         const double* e0,
@@ -40,6 +40,7 @@ void get_field_ideal(const std::vector<double[CellPoints][3]> &cells, const std:
         std::vector<std::complex<double>[3]> &field)
 {
     size_t n_points = points_for_field.size();
+    std::cout << n_points << " " <<num_frm << std::endl;
     //Инициализация параметров
     //f_simple_pot_G
     integral_par f_simple_pot_G_par(1, num_param.n_start, num_param.p_max, num_param.eps);//1,10,1,0.001
@@ -120,9 +121,9 @@ void save_field_as_gv(const std::string filename_out,
     {
         fout_u_real << field[i][0].real() << " " << field[i][1].real() << " " << field[i][2].real() << std::endl;
         fout_u_im << field[i][0].imag() << " " << field[i][1].imag() << " " << field[i][2].imag() << std::endl;
-        u_abs = sqrt(abs_tmp(field[i][0]) * abs_tmp(field[i][0]) +
-                    abs_tmp(field[i][1]) * abs_tmp(field[i][1])  +
-                    abs_tmp(field[i][2]) * abs_tmp(field[i][2]));
+        u_abs = sqrt(std::abs(field[i][0]) * std::abs(field[i][0]) +
+                    std::abs(field[i][1]) * std::abs(field[i][1])  +
+                    std::abs(field[i][2]) * std::abs(field[i][2]));
         fout_u_abs << u_abs << std::endl;
     }
 
