@@ -9,12 +9,14 @@
 #include "constants.h"
 #include "element_geom.h"
 
+
+using namespace Constants;
+
 //===============================================================================================
 //--------------------------------Filling ED_Par-------------------------------------------------
 //===============================================================================================
 ED_Par::ED_Par(const std::string filename)
 {
-    Constants c;
     std::ifstream fin(filename);
     if (!fin.is_open()) {
         std::cout << "Read " << filename <<  " error" << std::endl;
@@ -33,15 +35,14 @@ ED_Par::ED_Par(const std::string filename)
     {
         fin >> eps_d[i];
         fin >> m_d[i];
-        k[i] = omega * sqrt(eps_d[i] * m_d[i] * c.eps0 * c.m0);
-        lambda[i] = c.pi * 2. / k[i];
+        k[i] = omega * sqrt(eps_d[i] * m_d[i] * Constants::eps0 * Constants::m0);
+        lambda[i] = Constants::pi * 2. / k[i];
     }
 
-    k_vec[0] =  - abs_tmp(k[0]) * cos(alpha);
-    k_vec[1] =  - abs_tmp(k[0]) * sin(alpha);
+    k_vec[0] =  -std::abs(k[0]) * cos(alpha);
+    k_vec[1] =  -std::abs(k[0]) * sin(alpha);
     k_vec[2] = 0.;
     fin.close();
-    return;
 }
 
 
@@ -70,8 +71,6 @@ ED_Par::ED_Par(const ED_Par& ed_obj)
         k[i] = ed_obj.k[i];
         lambda[i] = ed_obj.lambda[i];
     }
-
-    return;
 }
 
 
@@ -84,6 +83,5 @@ ED_Par::~ED_Par()
     delete[] m_d;
     delete[] k;
     delete[] lambda;
-    return;
 }
 

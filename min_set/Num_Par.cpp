@@ -3,10 +3,11 @@
 #include <cstdlib>
 #include <fstream>
 #include <complex>
+#include <string>
 
 #include "Num_Par.h"
 
-Num_Par::Num_Par(const char* filename)
+Num_Par::Num_Par(const std::string filename)
 {
     std::ifstream fin(filename);
     if (!fin.is_open()) {

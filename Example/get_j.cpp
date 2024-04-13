@@ -4,13 +4,14 @@
 #include <fstream>
 #include <complex>
 #include <string>
+#include <vector>
 
 #include "common_type.h"
 
 
 //-----------------------Подсчет и запись токов, разложенных по базису---------------------------
 void  get_j_basis(const TGrid_DC_Full& a, const std::complex<double>* b, const std::string filename,
-        std::complex<double>**  j_vec)
+    std::vector<std::complex<double>[3]> &j_vec)
 {
     //Создание файлов для записи токов
     std::ofstream fout_j_real(filename + "_real.gv");
@@ -44,7 +45,6 @@ void  get_j_basis(const TGrid_DC_Full& a, const std::complex<double>* b, const s
     //Закрытие файлов
     fout_j_real.close();
     fout_j_image.close();
-    return;
 }
 
 
@@ -60,7 +60,9 @@ void  get_j_basis(const TGrid_DC_Full& a, const std::complex<double>* b, const s
 //-------------------------Дополнительная функция считывания готовых токов------------------------------------
 //============================================================================================================
 
-void get_j_from_files(const std::string filename_real, const std::string filename_image, std::complex<double>**  j_vec)
+void get_j_from_files(const std::string filename_real,
+        const std::string filename_image,
+        std::vector<std::complex<double>[3]> &j_vec)
 {
     std::ifstream fin_real(filename_real);                // Файл с током, реальная часть
     if (!fin_real.is_open()) {
@@ -88,6 +90,7 @@ void get_j_from_files(const std::string filename_real, const std::string filenam
     }
     n = n1_real * n2_real;
     double x1_real, x2_real, x3_real, x1_image, x2_image, x3_image;
+    
     for (int i = 0; i < n; i++)
     {
         fin_real >> x1_real >> x2_real >> x3_real;
@@ -99,5 +102,4 @@ void get_j_from_files(const std::string filename_real, const std::string filenam
 
     fin_real.close();
     fin_image.close();
-    return;
 }

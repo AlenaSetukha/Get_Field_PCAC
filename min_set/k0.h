@@ -6,11 +6,13 @@
 #include <cstdlib>
 #include <fstream>
 
-#include "constants.h"
 #include "f_par.h"
 #include "integral_par.h"
+#include "constants.h"
 #include "element_geom.h"
 #include "integral_universal_seg_pnt.h"
+
+using namespace Constants;
 
 
 //===============================================================================================
@@ -27,13 +29,13 @@
 //===============================================================================================
 
 template <typename P>
-void k0(const P* e, const double* x,
-        const double* norm, const double (&rut0)[4][3],
-        void (*f_0)(const double*, const double*, const f_par&, P*),
+void k0(const P (&e)[3], const double (&x)[3],
+        const double (&norm)[3], const double (&rut0)[4][3],
+        //void (*f_0)(const double*, const double*, const f_par&, P*),
+        void (*f_0)(const double(&)[3], const double(&)[3], const f_par&, P*),
         const f_par& param, const integral_par& int_par,
         P* res)
 {
-    Constants c;
     P* ks = new P[int_par.idim];
     double len_nu;
     double nu[3], diff[3];
@@ -74,7 +76,7 @@ void k0(const P* e, const double* x,
         len_nu = vec_length(nu);
 
 
-        if (len_nu > c.machine_zero)
+        if (len_nu > Constants::machine_zero)
         {
             for (int g = 0; g < int_par.idim; g++)
             {
@@ -89,7 +91,6 @@ void k0(const P* e, const double* x,
     }
 
     delete[] ks;
-    return;
 }
 
 
@@ -111,13 +112,13 @@ void k0(const P* e, const double* x,
 //===============================================================================================
 
 template <typename P>
-void k0(const P* e, const double* x,
-        const double* norm, const double (&rut0)[3][3],
-        void (*f_0)(const double*, const double*, const f_par&, P*),
+void k0(const P (&e)[3], const double (&x)[3],
+        const double (&norm)[3], const double (&rut0)[3][3],
+        //void (*f_0)(const double*, const double*, const f_par&, P*),
+        void (*f_0)(const double(&)[3], const double(&)[3], const f_par&, P*),
         const f_par& param, const integral_par& int_par,
         P* res)
 {
-    Constants c;
     P* ks = new P[int_par.idim];
     double len_nu;
     double nu[3], diff[3];
@@ -157,7 +158,7 @@ void k0(const P* e, const double* x,
         len_nu = vec_length(nu);
 
 
-        if (len_nu > c.machine_zero)
+        if (len_nu > Constants::machine_zero)
         {
             for (int g = 0; g < int_par.idim; g++)
             {
@@ -172,7 +173,6 @@ void k0(const P* e, const double* x,
     }
 
     delete[] ks;
-    return;
 }
 #endif
 

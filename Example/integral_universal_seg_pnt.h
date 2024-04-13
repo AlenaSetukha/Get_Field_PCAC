@@ -23,8 +23,9 @@
 //================================================================================================
 
 template <typename P>
-void integral_universal_seg_pnt(const double* a, const double* b, const double* x,
-        void (*f_0)(const double*, const double*, const f_par&, P*),
+void integral_universal_seg_pnt(const double (&a)[3], const double (&b)[3], const double (&x)[3],
+        //void (*f_0)(const double*, const double*, const f_par&, P*),
+        void (*f_0)(const double(&)[3], const double(&)[3], const f_par&, P*),
         const f_par& param, const integral_par& int_param,
         P* res)
 {
@@ -68,7 +69,7 @@ void integral_universal_seg_pnt(const double* a, const double* b, const double* 
         delta = 0.;
         for (int g = 0; g < int_param.idim; g++)
         {
-            delta += abs_tmp(res[g] - res_prev[g]) * abs_tmp(res[g] - res_prev[g]);
+            delta += std::abs(res[g] - res_prev[g]) * std::abs(res[g] - res_prev[g]);
         }
 
         if (delta <  int_param.eps * int_param.eps && p_n != 0)
@@ -92,9 +93,7 @@ void integral_universal_seg_pnt(const double* a, const double* b, const double* 
         }
     }
 
-
     delete[] res_prev;
     delete[] ff;
-    return;
 }
 #endif

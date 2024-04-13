@@ -7,9 +7,8 @@
 #include <fstream>
 #include <complex>
 
-class Constants
+namespace Constants
 {
-public:
     const double pi = 3.1415926535;                       // pi
     const double pi_reverse =  0.07957747154;             // 1/4pi
     const double ra = 57.295779513;
@@ -18,5 +17,5 @@ public:
     const std::complex<double> i_complex = std::complex<double>(0.0, 1.0);
     const double e = 2.7182818284;
     const double machine_zero = pow(10.0, -16);
-};
+}
 #endif

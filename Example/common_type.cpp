@@ -6,7 +6,6 @@
 
 #include "element_geom.h"
 #include "common_type.h"
-#include "constants.h"
 #include "cell.h"
 
 // sum - число ячеек
@@ -14,8 +13,6 @@
 // kl - число линий отрыва
 // kseg - число отрезков на одной из линий отрыва(tmp)
 // t - счетчик для подсчета модулей на объекте
-
-
 
 //===============================================================================================
 //------------------------------------Constructor------------------------------------------------
@@ -92,8 +89,6 @@ TGrid_DC_Full::TGrid_DC_Full(const std::string filename)      //сквозная
     for (int i = 0; i < num_obj; i++) {
         beg_end_obj[i] = new int[2];
     }
-
-    return;
 }
 
 
@@ -160,8 +155,6 @@ TGrid_DC_Full::TGrid_DC_Full(const TGrid_DC_Full& obj)
         beg_end_obj[i][0] = obj.beg_end_obj[i][0];
         beg_end_obj[i][1] = obj.beg_end_obj[i][1];
     }
-
-    return;
 }
 
 
@@ -253,7 +246,6 @@ void TGrid_DC_Full::fill_TGrid(const std::string filename)
         }
     }
     fin2.close();
-    return;
 }
 
 
@@ -270,7 +262,6 @@ void TGrid_DC_Full::check_step(const double (&root_tmp)[4][3], double max_diag_t
     {
         this->max_diag = diam_cur;      //заполнение шага сетки
     }
-    return;
 }
 
 

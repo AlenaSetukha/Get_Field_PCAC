@@ -7,7 +7,7 @@
 #include "e0.h"
 #include "element_geom.h"
 
-E0_Polar_Type::E0_Polar_Type(const int type_in, const double* k_in)
+E0_Polar_Type::E0_Polar_Type(const int type_in, const double (&k_in)[3])
 {
     double ort[3], vv[3];
     ort[0] = 0.;
@@ -28,7 +28,7 @@ E0_Polar_Type::E0_Polar_Type(const int type_in, const double* k_in)
 }
 
 
-E0_Polar_Type::E0_Polar_Type(const double* e0_in)
+E0_Polar_Type::E0_Polar_Type(const double (&e0_in)[3])
 {
     e0[0] = e0_in[0], e0[1] = e0_in[1], e0[2] = e0_in[2]; 
     type = 2;

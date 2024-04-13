@@ -12,8 +12,8 @@
 #include "kernel_lib.h"
 
 
-void K_rot_rot(const std::complex<double> (&j)[3], const double* x,
-        const double (&rut0)[4][3], const double* norm,
+void K_rot_rot(const std::complex<double> (&j)[3], const double (&x)[3],
+        const double (&rut0)[4][3], const double (&norm)[3],
         const integral_par& integral_par_f_simple, const integral_par& integral_par_f_grad_simple,
         const f_par& param, const f_par& param_seg,
         std::complex<double>* res)
@@ -34,15 +34,13 @@ void K_rot_rot(const std::complex<double> (&j)[3], const double* x,
     res[0] += cur_res3[0];
     res[1] += cur_res3[1];
     res[2] += cur_res3[2];
-
-    return;
 }
 
 
 
 
-void K_rot_rot(const std::complex<double> (&j)[3], const double* x,
-        const double (&rut0)[3][3], const double* norm,
+void K_rot_rot(const std::complex<double> (&j)[3], const double (&x)[3],
+        const double (&rut0)[3][3], const double (&norm)[3],
         const integral_par& integral_par_f_simple, const integral_par& integral_par_f_grad_simple,
         const f_par& param, const f_par& param_seg,
         std::complex<double>* res)
@@ -63,6 +61,4 @@ void K_rot_rot(const std::complex<double> (&j)[3], const double* x,
     res[0] += cur_res3[0];
     res[1] += cur_res3[1];
     res[2] += cur_res3[2];
-
-    return;
 }

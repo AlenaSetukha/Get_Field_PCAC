@@ -20,6 +20,6 @@ public:
 
     f_par(const double rs_in, const std::complex<double> k_in);
 
-    f_par(const double rs_in, const std::complex<double> k_in, const double* n_in);
+    f_par(const double rs_in, const std::complex<double> k_in, const double (&n_in)[3]);
 };
 #endif

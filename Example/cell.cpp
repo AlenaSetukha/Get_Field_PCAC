@@ -95,5 +95,4 @@ void Cell::Cell_fill(const double (&cell_in)[4][3])
     for (int k = 0; k < 3; k++) {
         tau[1][k] /= len;
     }
-    return;
 }

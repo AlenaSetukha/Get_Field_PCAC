@@ -3,6 +3,7 @@
 
 #include <complex>
 #include <string>
+#include <vector>
 #include "common_type.h"
 
 
@@ -15,11 +16,11 @@
 //      filename - имя для записи токов
 //      j_vec - токи, результат
 void  get_j_basis(const TGrid_DC_Full& a, const std::complex<double>* b, const std::string filename,
-        std::complex<double>**  j_vec);
-
-
+        std::vector<std::complex<double>[3]> &j_vec);
 
 //-------------------------Дополнительная функция считывания готовых токов-----------------------
-void get_j_from_files(const std::string filename_real, const std::string filename_image, std::complex<double>**  j_vec);
+void get_j_from_files(const std::string filename_real, const std::string filename_image,
+        std::vector<std::complex<double>[3]> &j_vec);
+
 #endif
 
