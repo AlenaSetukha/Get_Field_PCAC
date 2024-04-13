@@ -31,7 +31,6 @@ void vec_prod(const double (&vec_1)[3], const std::complex<double> (&vec_2)[3], 
 
 void vec_prod(const std::complex<double> (&vec_1)[3], const std::complex<double> (&vec_2)[3], std::complex<double> (&res)[3]);
 
-
 //====================================Distance btw 2 points======================================
 template <typename T>
 T dist(const T (&vec_1)[3], const T (&vec_2)[3])

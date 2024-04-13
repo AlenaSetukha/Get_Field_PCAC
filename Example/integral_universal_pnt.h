@@ -24,7 +24,6 @@
 //================================================================================================
 template<typename P>
 void integral_universal_pnt(const double (&x)[3], const double (&rut0)[4][3],
-        //void (*f_0)(const double*, const double*, const f_par&, P*),
         void (*f_0)(const double(&)[3], const double(&)[3], const f_par&, P*),
         const f_par& param, const integral_par& int_param, 
         P* res)
@@ -73,7 +72,6 @@ void integral_universal_pnt(const double (&x)[3], const double (&rut0)[4][3],
                     m2[k] = ((a3[k] + a4[k]) - (a1[k] + a2[k])) / 2.0;
                 }
                 vec_prod(m1, m2, rn);
-                std::cout << "rn: " << rn[0] << " " << rn[1] << " " << rn[2] << std::endl;
                 s = vec_length(rn);
 
                 f_0(x, rc, param, ff);
@@ -139,7 +137,6 @@ void integral_universal_pnt(const double (&x)[3], const double (&rut0)[4][3],
 
 template<typename P>
 void integral_universal_pnt(const double (&x)[3], const double (&rut0)[3][3],
-        //void (*f_0)(const double*, const double*, const f_par&, P*),
         void (*f_0)(const double(&)[3], const double(&)[3], const f_par&, P*),
         const f_par& param, const integral_par& int_param, 
         P* res)

@@ -20,7 +20,6 @@ int main()
     auto start = std::chrono::high_resolution_clock::now();
 //======================Геометрия==============================
     TGrid_DC_Full a("data//geodat_40_40.dat");
-    a.fill_TGrid("data//geodat_40_40.dat");
     std::cout << "max diag: " << a.max_diag << std::endl;
 
 //======================Parameters=============================

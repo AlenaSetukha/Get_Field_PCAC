@@ -31,7 +31,6 @@ using namespace Constants;
 template <typename P>
 void k0(const P (&e)[3], const double (&x)[3],
         const double (&norm)[3], const double (&rut0)[4][3],
-        //void (*f_0)(const double*, const double*, const f_par&, P*),
         void (*f_0)(const double(&)[3], const double(&)[3], const f_par&, P*),
         const f_par& param, const integral_par& int_par,
         P* res)
