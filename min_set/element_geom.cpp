@@ -85,7 +85,6 @@ void vec_prod(const double (&vec_1)[3], const double (&vec_2)[3], double (&res)[
     res[0] = vec_1[1] * vec_2[2] - vec_1[2] * vec_2[1];
     res[1] = vec_1[2] * vec_2[0] - vec_1[0] * vec_2[2];
     res[2] = vec_1[0] * vec_2[1] - vec_1[1] * vec_2[0];
-    std::cout << res[0] << " " << res[1] << " " << res[2] << std::endl;
 }
 
 void vec_prod(const std::complex<double> (&vec_1)[3], const double (&vec_2)[3], std::complex<double> (&res)[3])
@@ -108,7 +107,6 @@ void vec_prod(const std::complex<double> (&vec_1)[3], const std::complex<double>
     res[1] = vec_1[2] * vec_2[0] - vec_1[0] * vec_2[2];
     res[2] = vec_1[0] * vec_2[1] - vec_1[1] * vec_2[0];
 }
-
 //==================================Distance btw 2 points========================================
 template <typename T>
 T dist(const T (&vec_1)[3], const T (&vec_2)[3])
@@ -335,22 +333,30 @@ double get_diam(const double (&root_tmp)[4][3])
         res = vec_length(diag2);
     }
 
+    double ab[3], bc[3], cd[3], da[3];
+    for (int g = 0; g < 3; g++)
+    {
+        ab[g] = root_tmp[1][g] - root_tmp[0][g];
+        bc[g] = root_tmp[2][g] - root_tmp[1][g];
+        cd[g] = root_tmp[3][g] - root_tmp[2][g];
+        da[g] = root_tmp[0][g] - root_tmp[3][g];
+    }
 
-    if (dist(root_tmp[1], root_tmp[0]) > res)
+    if (vec_length(ab) > res)
     {
-        res = dist(root_tmp[1], root_tmp[0]);
+        res = vec_length(ab);
     }
-    if (dist(root_tmp[2], root_tmp[1])  > res)
+    if (vec_length(bc) > res)
     {
-        res = dist(root_tmp[2], root_tmp[1]);
+        res = vec_length(bc);
     }
-    if (dist(root_tmp[3], root_tmp[2])  > res)
+    if (vec_length(cd) > res)
     {
-        res = dist(root_tmp[3], root_tmp[2]);
+        res = vec_length(cd);
     }
-    if (dist(root_tmp[0], root_tmp[3])  > res)
+    if (vec_length(da) > res)
     {
-        res = dist(root_tmp[0], root_tmp[3]);
+        res = vec_length(da);
     }
     return res;
 }
