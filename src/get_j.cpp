@@ -4,6 +4,7 @@
 #include <fstream>
 #include <complex>
 #include <string>
+#include <vector>
 
 #include "common_type.h"
 
