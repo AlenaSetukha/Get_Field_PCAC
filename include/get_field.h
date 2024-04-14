@@ -30,17 +30,18 @@
 // points_for_field - точки, в которых считается поле: [n_points][3]
 // field - комплексное поле в каждой точке(результат): [n_points][3]
 
-template<size_t CellPoints>
-void get_field_ideal(const std::vector<double[CellPoints][3]> &cells, const std::vector<double[3]> &norm,
+
+template<size_t CellPoints> // количество вершин на ячейке - 3 или 4
+
+void get_field_ideal(const std::vector<double[CellPoints][3]> &cells,
+        const std::vector<double[3]> &norm,
         const std::vector<std::complex<double>[3]> &j_vec,
-        const double max_diag, const int num_frm,
+        const double max_diag,
         const ED_Par& ed_param, const Num_Par& num_param,
-        const double* e0,
+        const double (&e0)[3],
         const std::vector<double[3]> &points_for_field,
         std::vector<std::complex<double>[3]> &field)
 {
-    size_t n_points = points_for_field.size();
-    std::cout << n_points << " " <<num_frm << std::endl;
     //Инициализация параметров
     //f_simple_pot_G
     integral_par f_simple_pot_G_par(1, num_param.n_start, num_param.p_max, num_param.eps);//1,10,1,0.001
@@ -51,26 +52,20 @@ void get_field_ideal(const std::vector<double[CellPoints][3]> &cells, const std:
     f_par param_seg(max_diag * num_param.rs, ed_param.k[0]);
 
 //========================Вычисление поля===========================
+    std::complex<double> deg, deg1, u[3], cur_res3[3];
 
-#pragma omp parallel for
-    for (size_t i = 0; i < n_points; i++)
-    {   
-        std::complex<double> u[3], cur_res3[3];
-        double cell_j[CellPoints][3], norm_j[3];
-        std::complex<double> j_vec_j[3];
+    int n_points = points_for_field.size();
+    int num_frm = cells.size();
+    std::cout << n_points << " " << num_frm << std::endl;
+
+    for (int i = 0; i < n_points; i++)
+    {
         field[i][0] = 0., field[i][1] = 0., field[i][2] = 0.;
         for (int j = 0; j < num_frm; j++)
         {
-            for (int g = 0; g < CellPoints; g++)
-            {
-                cell_j[g][0] = cells[j][g][0];
-                cell_j[g][1] = cells[j][g][1];
-                cell_j[g][2] = cells[j][g][2];
-            }
-            norm_j[0] = norm[j][0], norm_j[1] = norm[j][1], norm_j[2] = norm[j][2];
-            j_vec_j[0] = j_vec[j][0], j_vec_j[1] = j_vec[j][1], j_vec_j[2] = j_vec[j][2];
-            K_rot_rot(j_vec_j, points_for_field[i], cell_j, norm_j, f_simple_pot_G_par,
+            K_rot_rot(j_vec[j], points_for_field[i], cells[j], norm[j], f_simple_pot_G_par,
                     f_grad_simple_pot_G_par, param, param_seg, cur_res3);
+            //std::cout << "K_rot_rot: " << cur_res3[0] << " " << cur_res3[1] << " " << cur_res3[2] << std::endl;
             field[i][0] += cur_res3[0];
             field[i][1] += cur_res3[1];
             field[i][2] += cur_res3[2];
@@ -81,7 +76,6 @@ void get_field_ideal(const std::vector<double[CellPoints][3]> &cells, const std:
         field[i][1] += u[1];
         field[i][2] += u[2];
     }
-    return;
 }
 
 
@@ -131,7 +125,6 @@ void save_field_as_gv(const std::string filename_out,
     fout_u_real.close();
     fout_u_im.close();
     fout_u_abs.close();
-    return;
 }
 
 

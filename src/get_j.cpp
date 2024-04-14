@@ -4,14 +4,13 @@
 #include <fstream>
 #include <complex>
 #include <string>
-#include <vector>
 
 #include "common_type.h"
 
 
 //-----------------------Подсчет и запись токов, разложенных по базису---------------------------
-void  get_j_basis(const TGrid_DC_Full& a, const std::complex<double>* b, const std::string filename,
-        std::complex<double>**  j_vec)
+void  get_j_basis(const TGrid_DC_Full& a, const std::complex<double>* b, const std::string &filename,
+        std::vector<std::complex<double>[3]> &j_vec)
 {
     //Создание файлов для записи токов
     std::ofstream fout_j_real(filename + "_real.gv");

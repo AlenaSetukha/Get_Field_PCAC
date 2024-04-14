@@ -23,7 +23,6 @@ int main(int argc, char **argv)
     auto start = std::chrono::high_resolution_clock::now();
 //======================Геометрия==============================
     TGrid_DC_Full a(input_dir + geom_fname);
-    a.fill_TGrid(input_dir + geom_fname);
     std::cout << "max diag: " << a.max_diag << std::endl;
 
 //======================Parameters=============================
@@ -92,9 +91,9 @@ int main(int argc, char **argv)
 
     std::vector<std::complex<double>[3]> field_H(num_points), field_V(num_points);
 
-    get_field_ideal(cells, norm, j_vec_H, a.max_diag, a.num_frm,
+    get_field_ideal(cells, norm, j_vec_H, a.max_diag,
                 ed_param, num_param_field, e0_H.e0, points_for_field, field_H);
-    get_field_ideal(cells, norm, j_vec_V, a.max_diag, a.num_frm,
+    get_field_ideal(cells, norm, j_vec_V, a.max_diag,
                 ed_param, num_param_field, e0_V.e0, points_for_field, field_V);
 
 //====================Сохранение в формате .gv=====================

@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <complex>
+#include <string>
 
 #include "Num_Par.h"
 
