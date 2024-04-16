@@ -18,7 +18,7 @@ using namespace Constants;
 void f_simple_pot_L(const double (&x)[3], const double (&y)[3], const f_par& param, double* ff)
 {
 //F = 1 / (4pi * |x - y|)
-    double r, t;
+    double r;
     r = sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) +
             (x[2] - y[2]) * (x[2] - y[2]));
     if (r < Constants::machine_zero)
@@ -28,7 +28,7 @@ void f_simple_pot_L(const double (&x)[3], const double (&y)[3], const f_par& par
         ff[0] = Constants::pi_reverse / r;//вне эпсилон круга, не сглаживаем функцию, K(x, y)
         if (r >= Constants::machine_zero && r < param.rs)
         {
-            t = r / param.rs;
+            double t = r / param.rs;
             ff[0] = ff[0] * (3 * t * t - 2 * t * t * t);//Keps(x, y)
         }
     }
@@ -42,7 +42,7 @@ void f_simple_pot_L(const double (&x)[3], const double (&y)[3], const f_par& par
 void f_grad_simple_pot_L(const double (&x)[3], const double (&y)[3], const f_par& param, double* ff)
 {
 //F = (y - x) / (4pi * |x - y|^3)
-    double r, t;
+    double r;
     r = sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) +
             (x[2] - y[2]) * (x[2] - y[2]));
     if (r < Constants::machine_zero)
@@ -56,8 +56,9 @@ void f_grad_simple_pot_L(const double (&x)[3], const double (&y)[3], const f_par
         {
             ff[i] = (y[i] - x[i]) * Constants::pi_reverse / r / r / r;//вне эпсилон круга, не сглаживаем функцию, K(x, y)
         }
-        if (r >= Constants::machine_zero && r < param.rs)
-        {
+        if (r < param.rs)
+        {   
+            double t;
             t = r / param.rs;
             for (int i = 0; i < 3; i++)
             {
@@ -74,7 +75,7 @@ void f_grad_simple_pot_L(const double (&x)[3], const double (&y)[3], const f_par
 void f_double_pot_L(const double (&x)[3], const double (&y)[3], const f_par& param,  double* ff)
 {
 //F = (1 / 4pi) * (n(y) x (x - y) / |x - y|^3)
-    double r, t;
+    double r;
     r = sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) +
             (x[2] - y[2]) * (x[2] - y[2]));
 
@@ -94,9 +95,9 @@ void f_double_pot_L(const double (&x)[3], const double (&y)[3], const f_par& par
 
 
         ff[0] = Constants::pi_reverse * scal_prod(norm, diff) / r / r / r;//K(x,y)
-        if (r >= Constants::machine_zero && r < param.rs)
+        if (r < param.rs)
         {
-            t = r / param.rs;
+            double t = r / param.rs;
             ff[0] = ff[0] * (3 * t * t - 2 * t * t * t);//Keps(x,y)
         }
     }
@@ -111,7 +112,7 @@ template <typename P>
 void f_vector_pot_L(const double (&x)[3], const double (&y)[3], const f_par& param, P* ff)
 {
 //F = (1 / 4pi) * a * (y - x) / |x - y|^3
-    double r, t, f;
+    double r;
     r = sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) +
             (x[2] - y[2]) * (x[2] - y[2]));
 
@@ -122,7 +123,7 @@ void f_vector_pot_L(const double (&x)[3], const double (&y)[3], const f_par& par
             ff[i] = static_cast<P>(0);
         }
     } else {
-        f = Constants::pi_reverse / r / r / r;//вне эпсилон круга, не сглаживаем функцию, K(x, y)
+        double f = Constants::pi_reverse / r / r / r;//вне эпсилон круга, не сглаживаем функцию, K(x, y)
 
         double diff[3];
         diff[0] = (y[0] - x[0]) * f;
@@ -131,9 +132,9 @@ void f_vector_pot_L(const double (&x)[3], const double (&y)[3], const f_par& par
 
         vec_prod(diff, param.a, ff);
 
-        if (r >= Constants::machine_zero && r < param.rs)
+        if (r < param.rs)
         {
-            t = r / param.rs;
+            double t = r / param.rs;
             for (int i = 0; i < 3; i++)
             {
                 ff[i] = ff[i] * (3 * t * t - 2 * t * t * t);//Keps
@@ -162,8 +163,7 @@ void f_simple_pot_G(const double (&x)[3], const double (&y)[3], const f_par& par
 {
 //F = (1 / 4pi) * (e^ik|x - y| / |x - y|)
 
-    double r;
-    r = sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) +
+    double r = sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) +
             (x[2] - y[2]) * (x[2] - y[2]));
 
 
@@ -172,8 +172,8 @@ void f_simple_pot_G(const double (&x)[3], const double (&y)[3], const f_par& par
         ff[0] = std::complex<double>(0., 0.);
     } else {
         std::complex<double> ikr = Constants::i_complex * param.k * r;//ikr
-        ff[0] = Constants::pi_reverse * exp(ikr) / r;//вне эпсилон круга, не сглаживаем функцию, K(x, y)
-        if (r >= Constants::machine_zero && r < param.rs)
+        ff[0] = (1./(4 * M_PI)) * exp(ikr) / r;//вне эпсилон круга, не сглаживаем функцию, K(x, y)
+        if (r < param.rs)
         {
             double t = r / param.rs;
             ff[0] = ff[0] * (3 * t * t - 2 * t * t * t);//Keps(x, y)
@@ -188,9 +188,7 @@ void f_simple_pot_G(const double (&x)[3], const double (&y)[3], const f_par& par
 void f_double_pot_G(const double (&x)[3], const double (&y)[3], const f_par& param,  std::complex<double>* ff)
 {
 //F = (1 / 4pi) * (n(y) x (x - y) / |x - y|^3) * (e^ik|x - y| - ike^ik|x - y|)
-    double r, t;
-    r = sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) +
-            (x[2] - y[2]) * (x[2] - y[2]));
+    double r = sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) + (x[2] - y[2]) * (x[2] - y[2]));
 
     if (r < Constants::machine_zero)
     {
@@ -206,17 +204,17 @@ void f_double_pot_G(const double (&x)[3], const double (&y)[3], const f_par& par
         norm[1] = param.n[1];
         norm[2] = param.n[2];
 
-        ff[0] = Constants::pi_reverse * scal_prod(norm, diff) / r / r / r;
+        ff[0] = Constants::pi_reverse * scal_prod(norm, diff) / (r * r * r);
 
         std::complex<double> ikr = Constants::i_complex * param.k * r;//ikr
         std::complex<double> e_ikr = exp(ikr);
         std::complex<double> ike_ikr = Constants::i_complex * param.k * exp(ikr);
 
         ff[0] = ff[0] * (e_ikr - ike_ikr);//K(x, y)
-        if (r >= Constants::machine_zero && r < param.rs)
+        if (r < param.rs)
         {
-            t = r / param.rs;
-            ff[0] = ff[0] * (3 * t * t - 2 * t * t * t);//Keps(x,y)
+            double t = r / param.rs;
+            ff[0] = ff[0] * t * t * (3 - 2 * t);//Keps(x,y)
         }
     }
 }
@@ -229,7 +227,7 @@ void f_grad_simple_pot_G(const double (&x)[3], const double (&y)[3], const f_par
 {
 //F = (1 / 4pi) * (ikr - 1) * e^ikr * (x - y) / r^3
 
-    double r, t;
+    double r;
     std::complex<double> f;
 
     r = sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) +
@@ -242,19 +240,19 @@ void f_grad_simple_pot_G(const double (&x)[3], const double (&y)[3], const f_par
             ff[i] = std::complex<double>(0., 0.);
         }
     } else {
-        f = Constants::pi_reverse / r / r / r;//вне эпсилон круга, не сглаживаем функцию, K(x, y)
+        f = Constants::pi_reverse / (r * r * r);//вне эпсилон круга, не сглаживаем функцию, K(x, y)
         std::complex<double> ikr = Constants::i_complex * param.k * r;//ikr
         f *= exp(ikr) * (ikr - std::complex<double>(1., 0.));
         for (int i = 0; i < 3; i++)
         {
             ff[i] = (x[i] - y[i]) * f;
         }
-        if (r >= Constants::machine_zero && r < param.rs)
+        if (r < param.rs)
         {
-            t = r / param.rs;
+            double t = r / param.rs;
             for (int i = 0; i < 3; i++)
             {
-                ff[i] = ff[i] * (3 * t * t - 2 * t * t * t);//Keps
+                ff[i] *= (t * t * (3 - 2 * t));//Keps
             }
         }
     }
