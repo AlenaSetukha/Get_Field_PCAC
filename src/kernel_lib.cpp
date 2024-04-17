@@ -170,8 +170,7 @@ void f_simple_pot_G(const double (&x)[3], const double (&y)[3], const f_par& par
     *ff = (1./(4 * M_PI)) * exp(std::complex<double>(0., r) * param.k); //K(x, y)
     double t = r / param.rs;
 
-    *ff *= (t < 1) * (t * t * (3 - 2 * t)) + (t >= 1);//Keps(x, y)
-    *ff /= r;
+    *ff *= (t < 1) * (t * (3 - 2 * t) / param.rs) + (t >= 1) / r;//Keps(x, y)
 }
 
 
