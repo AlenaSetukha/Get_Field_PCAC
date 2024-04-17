@@ -165,9 +165,9 @@ void f_simple_pot_G(const double (&x)[3], const double (&y)[3], const f_par& par
 {
 //F = (1 / 4pi) * (e^ik|x - y| / |x - y|)
 
-    double r = sqrt(sqr(x[0] - y[0])) + sqr((x[1] - y[1])) + sqr((x[2] - y[2]));
+    double r = sqrt(sqr(x[0] - y[0]) + sqr(x[1] - y[1]) + sqr(x[2] - y[2]));
     //TODO: константу 1/ 4pi можно вынести из под интеграла, чтобы не делать это умножение n^2 раз.
-    *ff = (1./(4 * M_PI)) * exp(std::complex<double>(0., r) * param.k); //K(x, y)
+    *ff = (1./ (4 * M_PI)) * exp(std::complex<double>(0., r) * param.k); //K(x, y)
     double t = r / param.rs;
 
     *ff *= (t < 1) * (t * (3 - 2 * t) / param.rs) + (t >= 1) / r;//Keps(x, y)
