@@ -46,7 +46,12 @@ double tr_square(const double (&pnt_1)[3], const double (&pnt_2)[3], const doubl
 
 //======================================Vector length============================================
 template <typename T>
-double vec_length(const T (&vec_1)[3]);
+double vec_length(const T (&vec_1)[3])
+{
+    return sqrt(std::abs(vec_1[0]) * std::abs(vec_1[0]) +
+                std::abs(vec_1[1]) * std::abs(vec_1[1]) +
+                std::abs(vec_1[2]) * std::abs(vec_1[2]));
+}
 
 //=======================================Solid angle=============================================
 double solid_angle(const double (&x_a)[3], const double (&x_b)[3], const double (&x_c)[3], const double (&x)[3]);

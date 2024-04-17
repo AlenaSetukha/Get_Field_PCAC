@@ -3,6 +3,7 @@
 #include <complex>
 
 #include "constants.h"
+#include "element_geom.h"
 
 using namespace Constants;
 
@@ -107,15 +108,6 @@ void vec_prod(const std::complex<double> (&vec_1)[3], const std::complex<double>
     res[1] = vec_1[2] * vec_2[0] - vec_1[0] * vec_2[2];
     res[2] = vec_1[0] * vec_2[1] - vec_1[1] * vec_2[0];
 }
-//==================================Distance btw 2 points========================================
-template <typename T>
-T dist(const T (&vec_1)[3], const T (&vec_2)[3])
-{
-    T res = sqrt((vec_1[0] - vec_2[0]) * (vec_1[0] - vec_2[0]) +
-        (vec_1[1] - vec_2[1]) * (vec_1[1] - vec_2[1]) +
-        (vec_1[2] - vec_2[2]) * (vec_1[2] - vec_2[2]));
-    return res;
-}
     
 //====================================Square of triagnle=========================================
 double tr_square(const double (&pnt_1)[3], const double (&pnt_2)[3], const double (&pnt_3)[3])
@@ -131,15 +123,6 @@ double tr_square(const double (&pnt_1)[3], const double (&pnt_2)[3], const doubl
     double res = scal_prod(n, n);
     res = sqrt(res) / 2.;
     return res;
-}
-
-//======================================Vector length============================================
-template <typename T>
-double vec_length(const T (&vec_1)[3])
-{
-    return sqrt(std::abs(vec_1[0]) * std::abs(vec_1[0]) +
-                std::abs(vec_1[1]) * std::abs(vec_1[1]) +
-                std::abs(vec_1[2]) * std::abs(vec_1[2]));
 }
 
 //=======================================Solid angle=============================================

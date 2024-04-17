@@ -15,11 +15,11 @@
 //      b - коэффициенты системы, ответ решения СЛАУ
 //      filename - имя для записи токов
 //      j_vec - токи, результат
-void  get_j_basis(const TGrid_DC_Full& a, const std::complex<double>* b, const std::string filename,
+void  get_j_basis(const TGrid_DC_Full& a, const std::complex<double>* b, const std::string &filename,
         std::vector<std::complex<double>[3]> &j_vec);
 
 //-------------------------Дополнительная функция считывания готовых токов-----------------------
-void get_j_from_files(const std::string filename_real, const std::string filename_image,
+void get_j_from_files(const std::string &filename_real, const std::string &filename_image,
         std::vector<std::complex<double>[3]> &j_vec);
 
 #endif
