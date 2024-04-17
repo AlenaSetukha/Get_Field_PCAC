@@ -154,7 +154,9 @@ void f_vector_pot_L(const double (&x)[3], const double (&y)[3], const f_par& par
 
 
 
-
+static inline double sqr(const double x){
+    return x * x;
+}
 
 //=====================================================================================
 //---------------------Потенциал простого слоя для ур-я Гельмгольца--------------------
@@ -163,22 +165,13 @@ void f_simple_pot_G(const double (&x)[3], const double (&y)[3], const f_par& par
 {
 //F = (1 / 4pi) * (e^ik|x - y| / |x - y|)
 
-    double r = sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) +
-            (x[2] - y[2]) * (x[2] - y[2]));
+    double r = sqrt(sqr(x[0] - y[0])) + sqr((x[1] - y[1])) + sqr((x[2] - y[2]));
+    //TODO: константу 1/ 4pi можно вынести из под интеграла, чтобы не делать это умножение n^2 раз.
+    *ff = (1./(4 * M_PI)) * exp(std::complex<double>(0., r) * param.k); //K(x, y)
+    double t = r / param.rs;
 
-
-    if (r < Constants::machine_zero)
-    {
-        ff[0] = std::complex<double>(0., 0.);
-    } else {
-        std::complex<double> ikr = Constants::i_complex * param.k * r;//ikr
-        ff[0] = (1./(4 * M_PI)) * exp(ikr) / r;//вне эпсилон круга, не сглаживаем функцию, K(x, y)
-        if (r < param.rs)
-        {
-            double t = r / param.rs;
-            ff[0] = ff[0] * (3 * t * t - 2 * t * t * t);//Keps(x, y)
-        }
-    }
+    *ff *= (t < 1) * (t * t * (3 - 2 * t)) + (t >= 1);//Keps(x, y)
+    *ff /= r;
 }
 
 

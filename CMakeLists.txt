@@ -9,8 +9,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 #compiler flags
-set(cmake_cxx_flags_debug "-Og -g -Wall -Wextra -pedantic -fsanitize=leak, -fsanitize=undefinded, -fsanitize=memory")
-set(cmake_cxx_flags_release "-Ofast -flto -march=native")
+set(CMAKE_CXX_FLAGS_DEBUG "-Og -g -Wall -Wextra -pedantic -fsanitize=leak, -fsanitize=undefinded, -fsanitize=memory")
+set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -flto -march=native")
 
 # packages
 find_package(OpenMP QUIET)
