@@ -27,9 +27,11 @@ set(SOURCE
     src/get_einc.cpp
     src/get_j.cpp
     src/integral_par.cpp
+    src/integrals_analytic.cpp
     src/K.cpp
     src/kernel_lib.cpp
     src/Num_Par.cpp
+    src/write_to_file.cpp
     )
 
 add_library(field_lib STATIC ${SOURCE})

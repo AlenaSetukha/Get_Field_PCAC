@@ -1,64 +1,38 @@
 #include <iostream>
-#include <cmath>
-#include <cstdlib>
-#include <fstream>
 #include <complex>
-
 
 #include "integral_par.h"
 #include "f_par.h"
 #include "integral_universal_pnt.h"
 #include "k0.h"
 #include "kernel_lib.h"
+#include "integrals_analytic.h"
+#include "Num_Par.h"
 
 
-void K_rot_rot(const std::complex<double> (&j)[3], const double (&x)[3],
-        const double (&rut0)[4][3], const double (&norm)[3],
-        const integral_par& integral_par_f_simple, const integral_par& integral_par_f_grad_simple,
-        const f_par& param, const f_par& param_seg,
+
+
+//-----------------Оператор  K = rotrot в ближней зоне с выделением особенности------------------
+
+void K_rot_rot_Near(const std::complex<double>* j, const double* x,
+        const double (&rut0)[4][3], const double* norm,
+        const std::complex<double> k, const Num_Par& num_param,
         std::complex<double>* res)
 {
-    //k^2
-    std::complex<double> cur_res[1];
-    integral_universal_pnt(x, rut0, f_simple_pot_G, param, integral_par_f_simple, cur_res);
-
-    std::complex<double> tmp = cur_res[0] * param.k * param.k;
-    res[0] = tmp * j[0];
-    res[1] = tmp * j[1];
-    res[2] = tmp * j[2];
-
-    //grad div
-    std::complex<double> cur_res3[3];
-    k0(j, x, norm, rut0, f_grad_simple_pot_G, param_seg, integral_par_f_grad_simple, cur_res3);
-
-    res[0] += cur_res3[0];
-    res[1] += cur_res3[1];
-    res[2] += cur_res3[2];
-}
+    // -curv
+    f_par param_seg(num_param.rs_seg * get_diam(rut0) / num_param.n_start_seg, k);
+    integral_par  int_parGradF(3, num_param.n_start_seg, num_param.p_max_seg, num_param.eps);
+    k0(j, x, norm, rut0, f_grad_simple_pot_G, param_seg, int_parGradF, res);
 
 
-
-
-void K_rot_rot(const std::complex<double> (&j)[3], const double (&x)[3],
-        const double (&rut0)[3][3], const double (&norm)[3],
-        const integral_par& integral_par_f_simple, const integral_par& integral_par_f_grad_simple,
-        const f_par& param, const f_par& param_seg,
-        std::complex<double>* res)
-{
-    //k^2
-    std::complex<double> cur_res[1];
-    integral_universal_pnt(x, rut0, f_simple_pot_G, param, integral_par_f_simple, cur_res);
-
-    std::complex<double> tmp = cur_res[0] * param.k * param.k;
-    res[0] = tmp * j[0];
-    res[1] = tmp * j[1];
-    res[2] = tmp * j[2];
-
-    //grad div
-    std::complex<double> cur_res3[3];
-    k0(j, x, norm, rut0, f_grad_simple_pot_G, param_seg, integral_par_f_grad_simple, cur_res3);
-
-    res[0] += cur_res3[0];
-    res[1] += cur_res3[1];
-    res[2] += cur_res3[2];
+    // k^2 с выделением особенности
+    f_par param(num_param.rs * get_diam(rut0) / num_param.n_start, k);
+    integral_par  int_parF(1, num_param.n_start, num_param.p_max, num_param.eps);
+    param.calc_dist = 3. * get_diam(rut0); // когда считать аналитически
+    std::complex<double> cur_res;
+    integral_simple_pot_G(x, rut0, param, int_parF, cur_res);
+    for (int i = 0; i < 3; i++)
+    {
+        res[i] += cur_res * k * k * j[i];
+    }
 }

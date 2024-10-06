@@ -1,77 +1,45 @@
 #include <iostream>
-#include <cmath>
-#include <cstdlib>
-#include <fstream>
-#include <complex>
 #include <string>
+#include <complex>
+#include <vector>
+#include <fstream>
+#include <limits>
+#include <iomanip>
+#include <limits>
+#include <numbers>
 
-#include "common_type.h"
 
 
-//-----------------------Подсчет и запись токов, разложенных по базису---------------------------
-void  get_j_basis(const TGrid_DC_Full& a, const std::complex<double>* b, const std::string &filename,
+//-----------------------Подсчет токов, разложенных по базису---------------------------
+void  get_j_basis(const std::vector<double[2][3]> &tau,
+        const std::complex<double>* b,
         std::vector<std::complex<double>[3]> &j_vec)
 {
-    //Создание файлов для записи токов
-    std::ofstream fout_j_real(filename + "_real.gv");
-    if (!fout_j_real.is_open()) {
-        std::cout << "Open " << filename << "_real.gv error" << std::endl;
-        return;
-    }
-
-    std::ofstream fout_j_image(filename + "_image.gv");
-    if (!fout_j_image.is_open()) {
-        std::cout << "Open " << filename << "_image.gv error" << std::endl;
-        return;
-    }
-
-    fout_j_real << 2 << " " << a.num_frm / 2 << std::endl;
-    fout_j_image << 2 << " " << a.num_frm / 2 << std::endl;
-
-    //Расчет и запись токов
-    int i0;
-    for (int i = 0; i < a.num_frm; i++)
+    int i0, num_frm = tau.size();
+    for (int i = 0; i < num_frm; i++)
     {
         i0 = 2 * i;
-        j_vec[i][0] = b[i0] * a.cell_list[i].tau[0][0] + b[i0 + 1] * a.cell_list[i].tau[1][0];
-        j_vec[i][1] = b[i0] * a.cell_list[i].tau[0][1] + b[i0 + 1] * a.cell_list[i].tau[1][1];
-        j_vec[i][2] = b[i0] * a.cell_list[i].tau[0][2] + b[i0 + 1] * a.cell_list[i].tau[1][2];
-
-        fout_j_real << j_vec[i][0].real() << " " << j_vec[i][1].real() << " " << j_vec[i][2].real() << std::endl;
-        fout_j_image << j_vec[i][0].imag() << " " << j_vec[i][1].imag() << " " << j_vec[i][2].imag() << std::endl;
+        j_vec[i][0] = b[i0] * tau[i][0][0] + b[i0 + 1] * tau[i][1][0];
+        j_vec[i][1] = b[i0] * tau[i][0][1] + b[i0 + 1] * tau[i][1][1];
+        j_vec[i][2] = b[i0] * tau[i][0][2] + b[i0 + 1] * tau[i][1][2];
     }
-
-    //Закрытие файлов
-    fout_j_real.close();
-    fout_j_image.close();
-    return;
 }
 
 
 
 
 
-#include <iostream>
-#include <iomanip>
-#include <limits>
 
-
-//============================================================================================================
 //-------------------------Дополнительная функция считывания готовых токов------------------------------------
-//============================================================================================================
-
-void get_j_from_files(const std::string &filename_real, const std::string &filename_image, std::vector<std::complex<double>[3]> &j_vec)
+void get_j_from_files(const std::string &filename_real,
+        const std::string &filename_image, std::vector<std::complex<double>[3]> &j_vec)
 {
     std::ifstream fin_real(filename_real);                // Файл с током, реальная часть
-    if (!fin_real.is_open()) {
-        std::cout << "Open " << filename_real << " error" << std::endl;
-        return;
-    }
-
     std::ifstream fin_image(filename_image);                // Файл с током, мнимая часть
-    if (!fin_image.is_open()) {
-        std::cout << "Open " << filename_image << " error" << std::endl;
-        return;
+
+    if (!fin_real.is_open() || !fin_image.is_open())
+    {
+        throw std::runtime_error("Read j.txt error: get_j_from_files");
     }
 
 
@@ -82,9 +50,10 @@ void get_j_from_files(const std::string &filename_real, const std::string &filen
     int n1_real, n2_real, n1_image, n2_image, n;
     fin_real >> n1_real >> n2_real;
     fin_image >> n1_image >> n2_image;
+
     if (n1_real != n1_image || n2_real != n2_image)
     {
-        return;
+        throw std::runtime_error("Read j.txt error: get_j_from_files");
     }
     n = n1_real * n2_real;
     double x1_real, x2_real, x3_real, x1_image, x2_image, x3_image;
@@ -99,5 +68,4 @@ void get_j_from_files(const std::string &filename_real, const std::string &filen
 
     fin_real.close();
     fin_image.close();
-    return;
 }

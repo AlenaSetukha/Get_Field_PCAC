@@ -23,8 +23,8 @@
 //     res - результат вычисления интеграла
 //================================================================================================
 template<typename P>
-void integral_universal_pnt(const double (&x)[3], const double (&rut0)[4][3],
-        void (*f_0)(const double(&)[3], const double(&)[3], const f_par&, P*),
+void integral_universal_pnt(const double* x, const double (&rut0)[4][3],
+        void (*f_0)(const double*, const double*, const f_par&, P*),
         const f_par& param, const integral_par& int_param, 
         P* res)
 {
@@ -134,8 +134,8 @@ void integral_universal_pnt(const double (&x)[3], const double (&rut0)[4][3],
 //================================================================================================
 
 template<typename P>
-void integral_universal_pnt(const double (&x)[3], const double (&rut0)[3][3],
-        void (*f_0)(const double(&)[3], const double(&)[3], const f_par&, P*),
+void integral_universal_pnt(const double* x, const double (&rut0)[3][3],
+        void (*f_0)(const double*, const double*, const f_par&, P*),
         const f_par& param, const integral_par& int_param, 
         P* res)
 {

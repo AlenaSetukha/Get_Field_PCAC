@@ -1,0 +1,4 @@
+/home/alena/Work/2024/Get_Field_PCAC/build/CMakeFiles/field_lib.dir
+/home/alena/Work/2024/Get_Field_PCAC/build/CMakeFiles/get_field.dir
+/home/alena/Work/2024/Get_Field_PCAC/build/CMakeFiles/edit_cache.dir
+/home/alena/Work/2024/Get_Field_PCAC/build/CMakeFiles/rebuild_cache.dir

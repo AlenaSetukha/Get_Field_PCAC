@@ -1,0 +1,32 @@
+#include <complex>
+#include <iostream>
+
+using std::complex;
+
+template<typename T1, typename T2>
+void foo(T1* a, T2* b, decltype((*a) * (*b)) (&res)[3]){
+    for(int i = 0; i < 3; ++i){
+        res[i] = a[i] * b[i];
+    }
+}
+
+int main(void){
+    complex<double> a[3];
+    complex<double> b[3];
+    double c[3];
+    for(int i = 0; i < 3; ++i){
+        a[i] = double(i);
+        b[i] = a[i];
+        c[i] = i * i;
+    }
+    complex<double> res[3];
+    foo(a, b, res);
+    std::cout << res[2] << std::endl;
+    foo(a, c, res);
+    std::cout << res[2] << std::endl;
+    foo(c, a, res);
+    std::cout << res[2] << std::endl;
+    double res2[3];
+    foo(c, c, res2);
+    std::cout << res2[2] << std::endl;
+}

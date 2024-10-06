@@ -1,15 +1,25 @@
 #ifndef _POLAR_TYPE_H_
 #define _POLAR_TYPE_H_
 
-class E0_Polar_Type
-{
+
+//=====================================================================================
+//-----------------------------Поляризация падающей волны------------------------------
+//=====================================================================================
+/**
+ * Поля:
+ *      type: {0, 1, 2} - горизонтальная/вертикальная/произвольная
+ *      e0 - орт вектора поляризации
+ */
+
+class E0_PolarType {
 public:
-    int type;//тип поляризации: H - 0, V - 1, своя - 2
-    double e0[3];//вектор поляризации
+    int type;
+    double e0[3];
 
-    E0_Polar_Type(const int type_in, const double (&k_in)[3]); //Горизонтальная(k_in = 0) / Вертикальная(k_in = 1) поляризации
-    E0_Polar_Type(const double (&e0_in)[3]); //Не типичная поляризация, в направлении некоторого вектора
-
+    E0_PolarType();
+    E0_PolarType(const double* e0_in);
+    E0_PolarType(const int type_in, const double* k_vec);
+    E0_PolarType(const E0_PolarType& obj);
 };
 #endif
 

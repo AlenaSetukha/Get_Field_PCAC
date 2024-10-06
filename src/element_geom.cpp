@@ -7,102 +7,51 @@
 
 using namespace Constants;
 
-//========================================My comparate===========================================
-
-int cmp(const std::complex<double> a, const std::complex<double> b)
-{
-    double a_abs = sqrt(a.real() * a.real() + a.imag() * a.imag());
-    double b_abs = sqrt(b.real() * b.real() + b.imag() * b.imag());
-    if (a_abs < b_abs)
-    {
-        return -1;
-    } else if (a_abs > b_abs)
-    {
-        return 1;
-    } else return 0;
-}
-
-int cmp(const std::complex<double> a, const double b)
-{
-    double a_abs = sqrt(a.real() * a.real() + a.imag() * a.imag());
-    if (a_abs < b)
-    {
-        return -1;
-    } else if (a_abs > b)
-    {
-        return 1;
-    } else return 0;
-}
-
-int cmp(const double a, const std::complex<double> b)
-{
-    double b_abs = sqrt(b.real() * b.real() + b.imag() * b.imag());
-    if (a < b_abs)
-    {
-        return -1;
-    } else if (a > b_abs)
-    {
-        return 1;
-    } else return 0;
-}
-
-int cmp(const double a, const double b)
-{
-    if (a < b)
-    {
-        return -1;
-    } else if (a > b)
-    {
-        return 1;
-    } else return 0;
-}
-
-
 //====================================Scalar product=============================================
 
-double scal_prod(const double (&vec_1)[3], const double (&vec_2)[3])
+double scal_prod(const double* vec_1, const double* vec_2)
 {
     return (vec_1[0] * vec_2[0] + vec_1[1] * vec_2[1] + vec_1[2] * vec_2[2]);
 }
 
-std::complex<double> scal_prod(const std::complex<double> (&vec_1)[3], const double (&vec_2)[3])
+std::complex<double> scal_prod(const std::complex<double>* vec_1, const double* vec_2)
 {
     return (vec_1[0] * vec_2[0] + vec_1[1] * vec_2[1] + vec_1[2] * vec_2[2]);
 }
 
-std::complex<double> scal_prod(const double (&vec_1)[3], const std::complex<double> (&vec_2)[3])
+std::complex<double> scal_prod(const double* vec_1, const std::complex<double>* vec_2)
 {
     return (vec_1[0] * vec_2[0] + vec_1[1] * vec_2[1] + vec_1[2] * vec_2[2]);
 }
 
-std::complex<double> scal_prod(const std::complex<double> (&vec_1)[3], const std::complex<double> (&vec_2)[3])
+std::complex<double> scal_prod(const std::complex<double>* vec_1, const std::complex<double>* vec_2)
 {
     return (vec_1[0] * vec_2[0] + vec_1[1] * vec_2[1] + vec_1[2] * vec_2[2]);
 }
 
 //====================================Vector product=============================================
-void vec_prod(const double (&vec_1)[3], const double (&vec_2)[3], double (&res)[3])
+void vec_prod(const double* vec_1, const double* vec_2, double* res)
 {
     res[0] = vec_1[1] * vec_2[2] - vec_1[2] * vec_2[1];
     res[1] = vec_1[2] * vec_2[0] - vec_1[0] * vec_2[2];
     res[2] = vec_1[0] * vec_2[1] - vec_1[1] * vec_2[0];
 }
 
-void vec_prod(const std::complex<double> (&vec_1)[3], const double (&vec_2)[3], std::complex<double> (&res)[3])
+void vec_prod(const std::complex<double>* vec_1, const double* vec_2, std::complex<double>* res)
 {
     res[0] = vec_1[1] * vec_2[2] - vec_1[2] * vec_2[1];
     res[1] = vec_1[2] * vec_2[0] - vec_1[0] * vec_2[2];
     res[2] = vec_1[0] * vec_2[1] - vec_1[1] * vec_2[0];
 }
 
-void vec_prod(const double (&vec_1)[3], const std::complex<double> (&vec_2)[3], std::complex<double> (&res)[3])
+void vec_prod(const double* vec_1, const std::complex<double>* vec_2, std::complex<double>* res)
 {
     res[0] = vec_1[1] * vec_2[2] - vec_1[2] * vec_2[1];
     res[1] = vec_1[2] * vec_2[0] - vec_1[0] * vec_2[2];
     res[2] = vec_1[0] * vec_2[1] - vec_1[1] * vec_2[0];
 }
 
-void vec_prod(const std::complex<double> (&vec_1)[3], const std::complex<double> (&vec_2)[3], std::complex<double> (&res)[3])
+void vec_prod(const std::complex<double>* vec_1, const std::complex<double>* vec_2, std::complex<double>* res)
 {
     res[0] = vec_1[1] * vec_2[2] - vec_1[2] * vec_2[1];
     res[1] = vec_1[2] * vec_2[0] - vec_1[0] * vec_2[2];
@@ -110,7 +59,7 @@ void vec_prod(const std::complex<double> (&vec_1)[3], const std::complex<double>
 }
     
 //====================================Square of triagnle=========================================
-double tr_square(const double (&pnt_1)[3], const double (&pnt_2)[3], const double (&pnt_3)[3])
+double tr_square(const double* pnt_1, const double* pnt_2, const double* pnt_3)
 {
     double ab[3], ac[3];
     for (int i = 0; i < 3; i++)
@@ -125,8 +74,21 @@ double tr_square(const double (&pnt_1)[3], const double (&pnt_2)[3], const doubl
     return res;
 }
 
+//===========================================Quadr square===========================================
+double quadr_square(const double* a, const double* b, const double* c, const double* d)
+{
+    double ac[3], bd[3], vec[3];
+    for (int i = 0; i < 3; i++)
+    {
+        ac[i] = c[i] - a[i];
+        bd[i] = d[i] - b[i];
+    }
+    vec_prod(ac, bd, vec);
+    return vec_length(vec) / 2.;
+}
+
 //=======================================Solid angle=============================================
-double solid_angle(const double (&x_a)[3], const double (&x_b)[3], const double (&x_c)[3], const double (&x)[3])
+double solid_angle(const double* x_a, const double* x_b, const double* x_c, const double* x)
 {
     double r1[3], r2[3], r3[3], l1, l2, l3, deg, v[3];
     r1[0] = x_a[0] - x[0];
@@ -145,8 +107,7 @@ double solid_angle(const double (&x_a)[3], const double (&x_b)[3], const double 
     l2 = vec_length(r2);
     l3 = vec_length(r3);
 
-    //vec_prod(r2, r3, v);
-    vec_prod(r3, r2, v);// = r2 x r3(почему-то перевернуто)
+    vec_prod(r3, r2, v);
 
     deg = scal_prod(r1, v) / (l1 * l2 * l3 + scal_prod(r1, r2) * l3 +
                     scal_prod(r2, r3) * l1 + scal_prod(r3, r1) * l2);
@@ -154,7 +115,7 @@ double solid_angle(const double (&x_a)[3], const double (&x_b)[3], const double 
 }
 
 //=======================================Cell normal=============================================
-void norm_func(const double (&rut0)[4][3], double (&norm_res)[3])
+void norm_func(const double (&rut0)[4][3], double* norm_res)
 {
     double ac[3], bd[3];
     for (int i = 0; i < 3; i++)
@@ -170,8 +131,24 @@ void norm_func(const double (&rut0)[4][3], double (&norm_res)[3])
     norm_res[2] = v[2] / l;
 }
 
+void norm_func(const double (&rut0)[3][3], double* norm_res)
+{
+    double ac[3], ab[3];
+    for (int i = 0; i < 3; i++)
+    {
+        ac[i] = rut0[2][i] - rut0[0][i];
+        ab[i] = rut0[1][i] - rut0[0][i]; 
+    }
+    double v[3], l;
+    vec_prod(ac, ab, v);
+    l = vec_length(v);
+    norm_res[0] = v[0] / l;
+    norm_res[1] = v[1] / l;
+    norm_res[2] = v[2] / l;
+}
+
 //======================Perpendicular to the segment(проекция точки на отрезок)==================
-void perp(const double (&a)[3], const double (&b)[3], const double (&x)[3], double (&n)[3])
+void perp(const double* a, const double* b, const double* x, double* n)
 {
     double ab[3], ax[3];
     for (int i = 0; i < 3; i++)
@@ -187,8 +164,7 @@ void perp(const double (&a)[3], const double (&b)[3], const double (&x)[3], doub
 }
 
 //==================================Nearest point to the segment=================================
-//статическая функция
-void near_point(const double (&seg)[2][3], const double (&x)[3], double (&z)[3], double& dist_res)
+void near_point(const double (&seg)[2][3], const double* x, double* z, double& dist_res)
 {
     double a[3], b[3], n[3];
     double dist_ab, dist_an, dist_bn;
@@ -224,7 +200,7 @@ void near_point(const double (&seg)[2][3], const double (&x)[3], double (&z)[3],
 }
 
 
-void near_point(const double (&a)[3], const double (&b)[3], const double (&x)[3], double (&z)[3], double& dist_res)
+void near_point(const double* a, const double* b, const double* x, double* z, double& dist_res)
 {
     double n[3];
     double dist_ab, dist_an, dist_bn;
@@ -255,11 +231,12 @@ void near_point(const double (&a)[3], const double (&b)[3], const double (&x)[3]
 }
 
 
+
 //==============================Normal to cell edge(нормаль к краю)==============================
-//rut0 - ячейка с 4 вершинами
-//norm - нормаль к ячейке
-//i, inext - индексы вершин A,B 
-void get_nu(const double (&rut0)[4][3], const double (&norm)[3], const int i, const int inext, double (&nu)[3])
+// rut0 - ячейка с 4 вершинами
+// norm - нормаль к ячейке
+// i, inext - индексы вершин A,B 
+void get_nu(const double (&rut0)[4][3], const double* norm, const int i, const int inext, double* nu)
 {
     double len_nu, diff[3]; 
     for (int j = 0; j < 3; j++)
@@ -279,7 +256,7 @@ void get_nu(const double (&rut0)[4][3], const double (&norm)[3], const int i, co
 }
 
 //a, b - концы отрезка, norm - нормаль к ячейке
-void get_nu(const double (&a)[3], const double (&b)[3], const double (&norm)[3], double (&nu)[3])
+void get_nu(const double* a, const double* b, const double* norm, double* nu)
 {
     double len_nu, diff[3]; 
     for (int j = 0; j < 3; j++)
@@ -345,30 +322,17 @@ double get_diam(const double (&root_tmp)[4][3])
 }
 
 
-double get_diam_triangle(const double (&root_tmp)[3][3])
+double get_diam(const double (&root_tmp)[3][3])
 {
     double len1, len2, len3;
     len1 = dist(root_tmp[0], root_tmp[1]);
     len2 = dist(root_tmp[1], root_tmp[2]);
     len3 = dist(root_tmp[2], root_tmp[0]);
-
-    double res = 0.;
-    if (len1 > len2)
-    {
-        res = len1;
-    } else {
-        res = len2;
-    }
-
-    if (len3 > res)
-    {
-        res = len3;
-    }
-    return res;
+    return std::max(std::max(len1, len2), len3);
 }
 
 //========================================Center of mass=========================================
-void get_center_mass(const double (&a)[3], const double (&b)[3], const double (&c)[3], const double (&d)[3], double (&res)[3])
+void get_center_mass(const double* a, const double* b, const double* c, const double* d, double* res)
 {
     for (int i = 0; i < 3; i++)
     {
@@ -376,17 +340,45 @@ void get_center_mass(const double (&a)[3], const double (&b)[3], const double (&
     }
 }
 
-
-//========================================Quadr square===========================================
-double quadr_square(const double (&a)[3], const double (&b)[3], const double (&c)[3], const double (&d)[3])
+void get_center_mass(const double* a, const double* b, const double* c, double* res)
 {
-    double ac[3], bd[3], vec[3];
     for (int i = 0; i < 3; i++)
     {
-        ac[i] = c[i] - a[i];
-        bd[i] = d[i] - b[i];
+        res[i] = (a[i] + b[i] + c[i]) / 3.;
     }
-    vec_prod(ac, bd, vec);
-    return vec_length(vec) / 2.;
 }
+
+void get_center_mass(const double (&root_tmp)[4][3], double* res)
+{
+    for (int i = 0; i < 3; i++)
+    {
+        res[i] = (root_tmp[0][i] + root_tmp[1][i] + root_tmp[2][i] + root_tmp[3][i]) * 0.25;
+    }
+}
+
+void get_center_mass(const double (&root_tmp)[3][3], double* res)
+{
+    for (int i = 0; i < 3; i++)
+    {
+        res[i] = (root_tmp[0][i] + root_tmp[1][i] + root_tmp[2][i]) / 3.;
+    }
+}
+
+
+//=============================Check two points are different=======================================
+int check_points_match(const double* a, const double* b)
+{
+    int res = 0; //если точки различны, вернет 0
+    for (int i = 0; i < 3; i++)
+    {
+        if (std::abs(a[i] - b[i]) < Constants::machine_zero)
+        {
+            res = 1;
+            break;
+        }
+    }
+    return res;
+}
+
+
 

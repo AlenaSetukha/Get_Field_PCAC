@@ -11,11 +11,14 @@
 
 using namespace Constants;
 
+static inline double sqr(const double x) {
+    return x * x;
+}
 
 //=====================================================================================
 //-----------------------Потенциал простого слоя для ур-я Лапласа----------------------
 //=====================================================================================
-void f_simple_pot_L(const double (&x)[3], const double (&y)[3], const f_par& param, double* ff)
+void f_simple_pot_L(const double* x, const double* y, const f_par& param, double* ff)
 {
 //F = 1 / (4pi * |x - y|)
     double r;
@@ -25,11 +28,11 @@ void f_simple_pot_L(const double (&x)[3], const double (&y)[3], const f_par& par
     {
         ff[0] = 0.0;
     } else {
-        ff[0] = Constants::pi_reverse / r;//вне эпсилон круга, не сглаживаем функцию, K(x, y)
+        ff[0] = Constants::pi_reverse / r;
         if (r >= Constants::machine_zero && r < param.rs)
         {
             double t = r / param.rs;
-            ff[0] = ff[0] * (3 * t * t - 2 * t * t * t);//Keps(x, y)
+            ff[0] = ff[0] * (3 * t * t - 2 * t * t * t);
         }
     }
 }
@@ -39,7 +42,7 @@ void f_simple_pot_L(const double (&x)[3], const double (&y)[3], const f_par& par
 //---------------Градиент потенциала простого слоя уравнения Лапласа-------------------
 //=====================================================================================
 
-void f_grad_simple_pot_L(const double (&x)[3], const double (&y)[3], const f_par& param, double* ff)
+void f_grad_simple_pot_L(const double* x, const double* y, const f_par& param, double* ff)
 {
 //F = (y - x) / (4pi * |x - y|^3)
     double r;
@@ -54,7 +57,7 @@ void f_grad_simple_pot_L(const double (&x)[3], const double (&y)[3], const f_par
     } else {
         for (int i = 0; i < 3; i++)
         {
-            ff[i] = (y[i] - x[i]) * Constants::pi_reverse / r / r / r;//вне эпсилон круга, не сглаживаем функцию, K(x, y)
+            ff[i] = (y[i] - x[i]) * Constants::pi_reverse / r / r / r;
         }
         if (r < param.rs)
         {   
@@ -62,7 +65,7 @@ void f_grad_simple_pot_L(const double (&x)[3], const double (&y)[3], const f_par
             t = r / param.rs;
             for (int i = 0; i < 3; i++)
             {
-                ff[i] *= (3 * t * t - 2 * t * t * t);//Keps(x, y)
+                ff[i] *= (3 * t * t - 2 * t * t * t);
             }
         }
     }
@@ -72,7 +75,7 @@ void f_grad_simple_pot_L(const double (&x)[3], const double (&y)[3], const f_par
 //=====================================================================================
 //---------------------Потенциал двойного слоя для ур-я Лапласа------------------------
 //=====================================================================================
-void f_double_pot_L(const double (&x)[3], const double (&y)[3], const f_par& param,  double* ff)
+void f_double_pot_L(const double* x, const double* y, const f_par& param,  double* ff)
 {
 //F = (1 / 4pi) * (n(y) x (x - y) / |x - y|^3)
     double r;
@@ -105,43 +108,6 @@ void f_double_pot_L(const double (&x)[3], const double (&y)[3], const f_par& par
 
 
 
-//=====================================================================================
-//---------------------Векторный потенциал для уравнения Лапласа-----------------------
-//=====================================================================================
-template <typename P>
-void f_vector_pot_L(const double (&x)[3], const double (&y)[3], const f_par& param, P* ff)
-{
-//F = (1 / 4pi) * a * (y - x) / |x - y|^3
-    double r;
-    r = sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) +
-            (x[2] - y[2]) * (x[2] - y[2]));
-
-    if (r < Constants::machine_zero)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            ff[i] = static_cast<P>(0);
-        }
-    } else {
-        double f = Constants::pi_reverse / r / r / r;//вне эпсилон круга, не сглаживаем функцию, K(x, y)
-
-        double diff[3];
-        diff[0] = (y[0] - x[0]) * f;
-        diff[1] = (y[1] - x[1]) * f;
-        diff[2] = (y[2] - x[2]) * f;
-
-        vec_prod(diff, param.a, ff);
-
-        if (r < param.rs)
-        {
-            double t = r / param.rs;
-            for (int i = 0; i < 3; i++)
-            {
-                ff[i] = ff[i] * (3 * t * t - 2 * t * t * t);//Keps
-            }
-        }
-    }
-}
 
 
 
@@ -151,33 +117,24 @@ void f_vector_pot_L(const double (&x)[3], const double (&y)[3], const f_par& par
 
 
 
-
-
-
-static inline double sqr(const double x){
-    return x * x;
-}
 
 //=====================================================================================
 //---------------------Потенциал простого слоя для ур-я Гельмгольца--------------------
 //=====================================================================================
-void f_simple_pot_G(const double (&x)[3], const double (&y)[3], const f_par& param, std::complex<double>* ff)
+void f_simple_pot_G(const double* x, const double* y, const f_par& param, std::complex<double>* ff)
 {
-//F = (1 / 4pi) * (e^ik|x - y| / |x - y|)
-
+    //F = (1 / 4pi) * (e^ik|x - y| / |x - y|)
     double r = sqrt(sqr(x[0] - y[0]) + sqr(x[1] - y[1]) + sqr(x[2] - y[2]));
-    //TODO: константу 1/ 4pi можно вынести из под интеграла, чтобы не делать это умножение n^2 раз.
-    *ff = (1./ (4 * M_PI)) * exp(std::complex<double>(0., r) * param.k); //K(x, y)
+    ff[0] = (1./ (4 * M_PI)) * exp(std::complex<double>(0., r) * param.k);
     double t = r / param.rs;
-
-    *ff *= (t < 1) * (t * (3 - 2 * t) / param.rs) + (t >= 1) / r;//Keps(x, y)
+    ff[0] *= (t < 1) * (t * (3 - 2 * t) / param.rs) + (t >= 1) / r;
 }
 
 
 //=====================================================================================
 //-----------------------Потенциал двойного слоя для ур-я Гельмгольца------------------
 //=====================================================================================
-void f_double_pot_G(const double (&x)[3], const double (&y)[3], const f_par& param,  std::complex<double>* ff)
+void f_double_pot_G(const double* x, const double* y, const f_par& param,  std::complex<double>* ff)
 {
 //F = (1 / 4pi) * (n(y) x (x - y) / |x - y|^3) * (e^ik|x - y| - ike^ik|x - y|)
     double r = sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) + (x[2] - y[2]) * (x[2] - y[2]));
@@ -198,15 +155,15 @@ void f_double_pot_G(const double (&x)[3], const double (&y)[3], const f_par& par
 
         ff[0] = Constants::pi_reverse * scal_prod(norm, diff) / (r * r * r);
 
-        std::complex<double> ikr = Constants::i_complex * param.k * r;//ikr
+        std::complex<double> ikr = Constants::i_complex * param.k * r;
         std::complex<double> e_ikr = exp(ikr);
         std::complex<double> ike_ikr = Constants::i_complex * param.k * exp(ikr);
 
-        ff[0] = ff[0] * (e_ikr - ike_ikr);//K(x, y)
+        ff[0] = ff[0] * (e_ikr - ike_ikr);
         if (r < param.rs)
         {
             double t = r / param.rs;
-            ff[0] = ff[0] * t * t * (3 - 2 * t);//Keps(x,y)
+            ff[0] = ff[0] * t * t * (3 - 2 * t);
         }
     }
 }
@@ -215,10 +172,9 @@ void f_double_pot_G(const double (&x)[3], const double (&y)[3], const f_par& par
 //=====================================================================================
 //---------------Градиент потенциала простого слоя уравнения Гельмгольца---------------
 //=====================================================================================
-void f_grad_simple_pot_G(const double (&x)[3], const double (&y)[3], const f_par&param, std::complex<double>* ff)
+void f_grad_simple_pot_G(const double* x, const double* y, const f_par& param, std::complex<double>* ff)
 {
-//F = (1 / 4pi) * (ikr - 1) * e^ikr * (x - y) / r^3
-
+    //F = (1 / 4pi) * (ikr - 1) * e^ikr * (x - y) / r^3
     double r;
     std::complex<double> f;
 
@@ -232,8 +188,8 @@ void f_grad_simple_pot_G(const double (&x)[3], const double (&y)[3], const f_par
             ff[i] = std::complex<double>(0., 0.);
         }
     } else {
-        f = Constants::pi_reverse / (r * r * r);//вне эпсилон круга, не сглаживаем функцию, K(x, y)
-        std::complex<double> ikr = Constants::i_complex * param.k * r;//ikr
+        f = Constants::pi_reverse / (r * r * r);
+        std::complex<double> ikr = Constants::i_complex * param.k * r;
         f *= exp(ikr) * (ikr - std::complex<double>(1., 0.));
         for (int i = 0; i < 3; i++)
         {
@@ -244,7 +200,7 @@ void f_grad_simple_pot_G(const double (&x)[3], const double (&y)[3], const f_par
             double t = r / param.rs;
             for (int i = 0; i < 3; i++)
             {
-                ff[i] *= (t * t * (3 - 2 * t));//Keps
+                ff[i] *= (t * t * (3 - 2 * t));
             }
         }
     }
@@ -254,13 +210,13 @@ void f_grad_simple_pot_G(const double (&x)[3], const double (&y)[3], const f_par
 //=====================================================================================
 //---------------Градиент потенциала простого слоя уравнения Гельмгольца eps-----------
 //=====================================================================================
-void f_grad_simple_pot_G_eps(const double (&x)[3], const double (&y)[3], const f_par& param, std::complex<double>* ff)
+void f_grad_simple_pot_G_eps(const double* x, const double* y, const f_par& param, std::complex<double>* ff)
 {
     double r, r0, tau[3];
 
-    tau[0] = param.a[0];
-    tau[1] = param.a[1];
-    tau[2] = param.a[2];
+    tau[0] = param.vec_dbl[0];
+    tau[1] = param.vec_dbl[1];
+    tau[2] = param.vec_dbl[2];
     std::complex<double> f;
 
     r0 = sqrt((x[0] - y[0]) * (x[0] - y[0]) + (x[1] - y[1]) * (x[1] - y[1]) +
@@ -280,7 +236,8 @@ void f_grad_simple_pot_G_eps(const double (&x)[3], const double (&y)[3], const f
         diff[2] = (x[2] - y[2]) / r0;
 
         std::complex<double> f1 = (-1.0 / r / r / r) + (Constants::i_complex * param.k / r / r);
-        std::complex<double> f2 = (3.0 / r / r / r) - (3.0 * Constants::i_complex * param.k / r / r) - (param.k * param.k / r);
+        std::complex<double> f2 = (3.0 / r / r / r) - (3.0 * Constants::i_complex *
+                param.k / r / r) - (param.k * param.k / r);
         f2 *= scal_prod(diff, tau);
 
         std::complex<double> eikr = exp(Constants::i_complex * param.k * r0) * Constants::pi_reverse;//попробовать e^ikr
@@ -293,6 +250,62 @@ void f_grad_simple_pot_G_eps(const double (&x)[3], const double (&y)[3], const f
 
 
 
+//=====================================================================================
+//---------------------Ядро для оператора K(rotrot) в дальней зоне---------------------
+//=====================================================================================
+void f_KFar(const double* x, const double* y, const f_par& param, std::complex<double>* ff)
+{
+    /**
+     * Kfar = (e^(ikr) / 4pi) * (j_vec * f1 + (x - y)(x - y, j_vec) * f2 / r^2)
+     * f1 = -1 / r^3 + (ik) / r^2 + k^2 / r
+     * f2 = 3 / r^3 - (3ik) / r^2 - k^2 / r
+     */
+    
+    double r = dist(x, y);
+
+    if (r < Constants::machine_zero)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            ff[i] = std::complex<double>(0., 0);
+        }
+    } else {
+        std::complex<double> j[3];
+        j[0] = param.vec_cmplx[0], j[1] = param.vec_cmplx[1], j[2] = param.vec_cmplx[2];
+        double diff[3];
+        for (int i = 0; i < 3; i++)
+        {
+            diff[i] = (x[i] - y[i]) / r;
+        }
+        std::complex<double> f1 = (-1.0 / r / r / r) +
+                (Constants::i_complex * param.k / r / r +
+                param.k * param.k / r);
+        std::complex<double> f2 = (3.0 / r / r / r) - (3.0 * Constants::i_complex *
+                param.k / r / r) - (param.k * param.k / r);
+        f2 *= scal_prod(diff, j);
+        std::complex<double> eikr = exp(Constants::i_complex * param.k * r) *
+                Constants::pi_reverse;
+        for (int i = 0; i < 3; i++)
+        {
+            ff[0] = (diff[i] * f2 + j[i] * f1) * eikr;
+        }
+
+        if (r < param.rs)
+        {
+            double t = r / param.rs;
+            for (int i = 0; i < 3; i++)
+            {
+                ff[i] *= (t * t * (3 - 2 * t));
+            }
+        }
+    }
+}
+
+
+
+
+
+
 
 
 
@@ -300,7 +313,7 @@ void f_grad_simple_pot_G_eps(const double (&x)[3], const double (&y)[3], const f
 //=====================================================================================
 //-------------------Ядро для интеграла от (x - y) / |x - y|^2-------------------------
 //=====================================================================================
-void func3(const double (&x)[3], const double (&y)[3], const f_par& param, double* ff)
+void func3(const double* x, const double* y, const f_par& param, double* ff)
 {
     double diff[3];
     for (int i = 0; i < 3; i++)
@@ -325,11 +338,12 @@ void func3(const double (&x)[3], const double (&y)[3], const f_par& param, doubl
 //=====================================================================================
 //---------------Ядро осреднения для поверхностной дивергенции(далеко от края)---------
 //=====================================================================================
-void f_aver_simple(const double (&x)[3], const double (&y)[3], const f_par& param, double* res)
+void f_aver_simple(const double* x, const double* y, const f_par& param, double* res)
 {
     double eps_edge = param.eps_edge;
     double reps = dist(x, y) / eps_edge;
-    double deg = (-6.0 + 2. * reps * reps) * exp(-reps * reps) / Constants::pi / eps_edge / eps_edge / eps_edge / eps_edge; 
+    double deg = (-6.0 + 2. * reps * reps) * exp(-reps * reps) /
+            Constants::pi / eps_edge / eps_edge / eps_edge / eps_edge; 
     for (int i = 0; i < 3; i++)
     {
         res[i] = (x[i] - y[i]) * deg; 
@@ -339,11 +353,12 @@ void f_aver_simple(const double (&x)[3], const double (&y)[3], const f_par& para
 //=====================================================================================
 //---------------Ядро осреднения для поверхностной дивергенции(близко к краю)----------
 //=====================================================================================
-void f_aver_near_edge(const double (&x)[3], const double (&y)[3], const f_par& param, double* res)
+void f_aver_near_edge(const double* x, const double* y, const f_par& param, double* res)
 {
     double eps_edge = param.eps_edge;
     double reps = dist(x, y) / eps_edge;//эпс из формулы, не сглаживание
-    double deg =  (-20.0 + 8. * reps * reps) * exp(-reps * reps) / Constants::pi / eps_edge / eps_edge / eps_edge / eps_edge; 
+    double deg =  (-20.0 + 8. * reps * reps) * exp(-reps * reps) /
+            Constants::pi / eps_edge / eps_edge / eps_edge / eps_edge; 
     for (int i = 0; i < 3; i++)
     {
         res[i] = (x[i] - y[i]) * deg; 
@@ -356,7 +371,7 @@ void f_aver_near_edge(const double (&x)[3], const double (&y)[3], const f_par& p
 //---------------------------Функция осреднения(базовая)-------------------------------
 //=====================================================================================
 //psi(r = |x - y|) = e^(r^2 / eps^2) / (pi * eps^2)
-double psi_aver_func(const double (&x)[3], const double (&y)[3], const double eps)
+double psi_aver_func(const double* x, const double* y, const double eps)
 {
     double res, deg;
 
@@ -365,11 +380,10 @@ double psi_aver_func(const double (&x)[3], const double (&y)[3], const double ep
         return 0.;
     }
     deg = dist(x, y) * dist(x, y) / eps / eps;
-std::cout << "deg: " << deg << std::endl;
-    res = exp(deg) / Constants::pi / eps / eps;
-std::cout << "res: " << res << std::endl;
-    return res;
+    return exp(deg) / Constants::pi / eps / eps;
+    
 }
+
 
 
 
@@ -381,7 +395,7 @@ std::cout << "res: " << res << std::endl;
 //=====================================================================================
 //-----------------Потенциал простого слоя для ур-я Гельмгольца - 1--------------------
 //=====================================================================================
-void f_simple_pot_G1(const double (&x)[3], const double (&y)[3], const f_par& param, std::complex<double>* ff)
+void f_simple_pot_G1(const double* x, const double* y, const f_par& param, std::complex<double>* ff)
 {
 //F = (1 / 4pi) * ((e^ik|x - y| - 1) / |x - y|)
 
@@ -394,12 +408,12 @@ void f_simple_pot_G1(const double (&x)[3], const double (&y)[3], const f_par& pa
     {
         ff[0] = std::complex<double>(0., 0.);
     } else {
-        std::complex<double> ikr = Constants::i_complex * param.k * r;//ikr
-        ff[0] = Constants::pi_reverse * (exp(ikr) - 1.) / r;//вне эпсилон круга, не сглаживаем функцию, K(x, y)
+        std::complex<double> ikr = Constants::i_complex * param.k * r;
+        ff[0] = Constants::pi_reverse * (exp(ikr) - 1.) / r;
         if (r >= Constants::machine_zero && r < param.rs)
         {
             double t = r / param.rs;
-            ff[0] = ff[0] * (3 * t * t - 2 * t * t * t);//Keps(x, y)
+            ff[0] = ff[0] * (3 * t * t - 2 * t * t * t);
         }
     }
 }
@@ -413,8 +427,8 @@ void f_simple_pot_G1(const double (&x)[3], const double (&y)[3], const f_par& pa
 //===============================================================================================
 //-------------------Функция расчета ядра Ker = Einc(x) * ort(стороны ячейки)--------------------
 //===============================================================================================
-void get_einc_ker(const double (&x)[3], const f_par& param, std::complex<double>* e_inc)
+void get_einc_ker(const double* x, const f_par& param, std::complex<double>* e_inc)
 {
-    std::complex<double> deg = pow(Constants::e, Constants::i_complex * scal_prod(param.a, x));         // a - k_vec, почти всегда double
+    std::complex<double> deg = pow(Constants::e, Constants::i_complex * scal_prod(param.vec_dbl, x));         // a - k_vec, почти всегда double
     e_inc[0] = scal_prod(param.e0, param.ort) * deg;                                  // e0 - double       
 }

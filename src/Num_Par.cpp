@@ -14,7 +14,7 @@ Num_Par::Num_Par(const std::string &filename)
         std::cout << "Read num_param.txt error" << std::endl;
         exit(1);
     }
-    fin >> eps >> n_start >> n_start_seg >> p_max >> p_max_seg >> rs >> T >> k >> kappa >> M;
+    fin >> eps >> n_start >> n_start_seg >> p_max >> p_max_seg >> rs >> rs_seg >> T >> k >> kappa >> M;
     dt = T / k;
     fin.close();
 }
