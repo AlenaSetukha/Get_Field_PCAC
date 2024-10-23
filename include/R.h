@@ -11,7 +11,6 @@
 #include "Num_Par.h"
 #include "constants.h"
 
-using namespace Constants;
 
 
 //===============================================================================================
@@ -29,7 +28,7 @@ using namespace Constants;
  * 
  * num_param.rs - сглаживание для пов. интеграла
  * относительно diam текущей ячейки(~0.5-1)
- */
+*/
 
 template<size_t CellPoints>
 void R_rot_Far(const std::complex<double>* j, const double* x,

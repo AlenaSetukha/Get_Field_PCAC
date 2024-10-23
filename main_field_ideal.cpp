@@ -103,7 +103,6 @@ int main(int argc, char **argv)
     write_field_toFiles(filename, field_V, n1, n2);
 
 
-
     //=========================Очистка памяти===================
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;

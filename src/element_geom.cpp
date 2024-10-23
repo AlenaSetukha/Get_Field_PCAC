@@ -5,7 +5,6 @@
 #include "constants.h"
 #include "element_geom.h"
 
-using namespace Constants;
 
 //====================================Scalar product=============================================
 

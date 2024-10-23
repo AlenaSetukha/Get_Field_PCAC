@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 
-#include "constants.h"
 #include "element_geom.h"
 
 //===============================================================================================

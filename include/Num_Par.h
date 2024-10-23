@@ -14,9 +14,10 @@
  *      n_start - стартовое разбиение на ячейке
  *      p_max - предельное разбиение на ячейке
  *      p_max_seg - предельное разбиение на отрезке
- *      k - число шагов по времени
- *      T - временной отрезок
- *      dt - шаг по времени
+ * Дополнительно:
+ *      k - число шагов по времени(если есть)
+ *      T - временной отрезок(если есть)
+ *      dt - шаг по времени(если есть)
  *      kappa - параметр задачи(дополнительный)
  *      M - параметр задачи(дополнительный)
  * Радиус сглаживания может подаваться в долях от каждой ячейки/шага сетки,
@@ -33,6 +34,9 @@ public:
 
     Num_Par();
     Num_Par(const std::string &filename);
+    Num_Par(const double eps_in, const double rs_in, const double rs_seg_in,
+            const int n_start_in, const int n_start_seg_in, const int p_max_in,
+            const int p_max_seg_in);
     Num_Par(const Num_Par& obj);
 };
 #endif

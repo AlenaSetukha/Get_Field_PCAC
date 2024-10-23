@@ -8,8 +8,6 @@
 #include "constants.h"
 #include "element_geom.h"
 
-using namespace Constants;
-
 void write_j_toFiles(const std::string &filename,
                      const std::vector<std::complex<double>[3]> &j) {
   // Создание файлов для записи токов
