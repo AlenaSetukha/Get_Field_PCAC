@@ -366,7 +366,7 @@ void integral_simple_pot_G(const double *x, const double (&rut0)[4][3],
     // близко, считаем аналитически, разбивая на 2 интеграла
     ff = static_cast<std::complex<double>>(integral1Divr(rut0, x)) * 1. /
          (4 * M_PI);
-    if (dist(x, y) < pow(10, -5)) {
+    if (dist(x, y) < 1e-5) {
       ff += quadr_square(rut0[0], rut0[1], rut0[2], rut0[3]) *
             std::complex<double>(0., 1.) * param.k * 1. / (4 * M_PI);
     } else {
