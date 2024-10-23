@@ -21,4 +21,3 @@ integral_par::integral_par(const integral_par& obj)
     p_max = obj.p_max;
     eps = obj.eps;
 }
-

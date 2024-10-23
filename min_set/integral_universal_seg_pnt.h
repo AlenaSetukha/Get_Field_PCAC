@@ -23,8 +23,8 @@
 //================================================================================================
 
 template <typename P>
-void integral_universal_seg_pnt(const double (&a)[3], const double (&b)[3], const double (&x)[3],
-        void (*f_0)(const double(&)[3], const double(&)[3], const f_par&, P*),
+void integral_universal_seg_pnt(const double* a, const double* b, const double* x,
+        void (*f_0)(const double*, const double*, const f_par&, P*),
         const f_par& param, const integral_par& int_param,
         P* res)
 {
