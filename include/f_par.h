@@ -3,7 +3,8 @@
 
 #include <complex>
 //===============================================================================================
-//---------------------Класс параметров ядра интегрирования--------------------------------------
+//---------------------Класс параметров ядра
+// интегрирования--------------------------------------
 //===============================================================================================
 /**
  * Поля:
@@ -18,15 +19,16 @@
 
 class f_par {
 public:
-    double rs, calc_dist, eps_edge;
-    std::complex<double> k, vec_cmplx[3];
-    double vec_dbl[3], n[3], ort[3], e0[3];
-    
-    f_par();
-    f_par(const double rs_in);
-    f_par(const double rs_in, const std::complex<double> k_in);
-    f_par(const double rs_in, const std::complex<double> k_in, const double* n_in);
+  double rs, calc_dist, eps_edge;
+  std::complex<double> k, vec_cmplx[3];
+  double vec_dbl[3] = {0, 0, 0}, n[3], ort[3], e0[3];
 
-    f_par(const f_par& obj);
+  f_par();
+  f_par(const double rs_in);
+  f_par(const double rs_in, const std::complex<double> k_in);
+  f_par(const double rs_in, const std::complex<double> k_in,
+        const double *n_in);
+
+  f_par(const f_par &obj);
 };
 #endif
