@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(Get_field_Ideal CXX)
+project(PCAC_LIB CXX)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -16,30 +16,40 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -flto -march=native")
 find_package(OpenMP QUIET)
 
 include_directories(include)
+include_directories(include/ED_Field)
+include_directories(include/ED_Operators)
+include_directories(include/grids)
+include_directories(include/integrators)
+include_directories(include/io)
+include_directories(include/param)
 
 set(SOURCE
-    src/cell.cpp
-    src/common_type.cpp
-    src/e0.cpp
-    src/ED_Par.cpp
+    src/grids/Cell.cpp
+    src/grids/Cell_Triangle.cpp
+    src/grids/common_type_triangle.cpp
+    src/grids/common_type.cpp
+    src/ED_Field/E0.cpp
+    src/ED_Field/get_einc.cpp
+    src/ED_Field/get_hinc.cpp
+    src/ED_Field/get_j.cpp
+    src/io/write_to_file.cpp
+    src/param/ED_Par.cpp
+    src/param/Kernel_Par.cpp
+    src/param/Integral_Par.cpp
+    src/param/Num_Par.cpp
     src/element_geom.cpp
-    src/f_par.cpp
-    src/get_einc.cpp
-    src/get_j.cpp
-    src/integral_par.cpp
     src/integrals_analytic.cpp
-    src/K.cpp
     src/kernel_lib.cpp
-    src/Num_Par.cpp
-    src/write_to_file.cpp
     )
 
-add_library(field_lib STATIC ${SOURCE})
+add_library(pcac_lib STATIC ${SOURCE})
 
 
-add_executable(get_field main_field_ideal.cpp)
+
+
+add_executable(test_PCAC ./tests/ED_Operators/main_K.cpp)
 
 if(OPENMP_FOUND)
-    target_link_libraries(get_field PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(test_PCAC PUBLIC OpenMP::OpenMP_CXX)
 endif()
-target_link_libraries(get_field PUBLIC field_lib)
+target_link_libraries(test_PCAC PUBLIC pcac_lib)

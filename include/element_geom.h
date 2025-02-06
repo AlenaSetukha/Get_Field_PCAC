@@ -44,6 +44,10 @@ double tr_square(const double* pnt_1, const double* pnt_2, const double* pnt_3);
 //==Quadr square==
 double quadr_square(const double* a, const double* b, const double* c, const double* d);
 
+//====Cell sqaure=====
+double cell_square(const double (&rut0)[4][3]);
+double cell_square(const double (&rut0)[3][3]);
+
 
 //==Solid angle==
 double solid_angle(const double* x_a, const double* x_b, const double* x_c, const double* x);
@@ -102,4 +106,5 @@ double vec_length(const T* vec_1)
                 std::abs(vec_1[1]) * std::abs(vec_1[1]) +
                 std::abs(vec_1[2]) * std::abs(vec_1[2]));
 }
-#endif
+
+#endif // _ELEMENT_GEOM_H_
