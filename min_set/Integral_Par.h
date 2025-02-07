@@ -13,14 +13,16 @@
  *      eps - точность вычисления интеграла(имеет смысл при p_max != 1)
  */
 
-class integral_par
-{
+class Integral_Par {
 public:
-    int idim, n_start, p_max;
+    int idim;
+    int n_start, p_max;
     double eps;
 
-    integral_par();
-    integral_par(const int idim_in, const int n_start_in, const int p_max_in, const double eps_in);
-    integral_par(const integral_par& obj);
+    Integral_Par() = default;
+    Integral_Par(const int idim_in, const int n_start_in, const int p_max_in, const double eps_in);
+    Integral_Par(const Integral_Par& obj);
+    ~Integral_Par() = default;
 };
-#endif
+#endif // _INTEGRAL_PAR_H_
+

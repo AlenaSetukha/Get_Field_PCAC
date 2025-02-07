@@ -6,9 +6,9 @@
 //==============================================================================================
 //--------------------------------Integral 1/|x-y|----------------------------------------------
 //==============================================================================================
-//Четырехугольная ячейка
 //Брать эту функцию, или численную - решать вне.
 double integral1Divr(const double (&rut0)[4][3], const double* x);
+double integral1Divr(const double (&rut0)[3][3], const double *x);
 
 
 
@@ -42,13 +42,44 @@ void integralnu1Divr(const double (&rut0)[4][3], const double* x, const double e
 //--------------Полуаналитический поверхностный интеграл по ячейке от функции-------------------
 //-----------------------F(x-y) = e^ik|x - y| / 4 * pi * |x - y|--------------------------------
 //==============================================================================================
-#include "f_par.h"
-#include "integral_par.h"
+#include "Kernel_Par.h"
+#include "Integral_Par.h"
 #include "integral_universal_pnt.h"
 #include "kernel_lib.h"
+#include "element_geom.h"
 
-void integral_simple_pot_G(const double* x, const double (&rut0)[4][3], 
-        const f_par& param, const integral_par& int_param, 
-        std::complex<double>& ff);
 
-#endif
+//=====================================================================================
+//------------------Функция, которая возвращает полуаналитический----------------------
+//-------------------поверхностный интеграл по ячейке от функции-----------------------
+//---------------------F(x-y) = e^ik|x - y| / 4 * pi * |x - y|-------------------------
+//=====================================================================================
+template<size_t CellPoints>
+void integral_simple_pot_G(const double *x, const double (&rut0)[CellPoints][3],
+                           const Kernel_Par &param, const Integral_Par &int_param,
+                           std::complex<double> &ff)
+{
+    double y[3];
+    get_center_mass(rut0, y);
+    std::complex<double> tmp[1];
+    ff = std::complex<double>(0., 0.);
+
+    if (dist(x, y) < param.calc_dist) {
+        // близко, считаем аналитически, разбивая на 2 интеграла
+        ff = static_cast<std::complex<double>>(integral1Divr(rut0, x)) * 1. /
+             (4 * M_PI);
+        if (dist(x, y) < 1e-5) {
+            ff += cell_square(rut0) *
+                  std::complex<double>(0., 1.) * param.k / (4 * M_PI);
+        } else {
+            integral_universal_pnt(x, rut0, f_simple_pot_G1, param, int_param, tmp);
+            ff += tmp[0];
+        }
+    } else {
+        // далеко, считаем интеграл численно
+        integral_universal_pnt(x, rut0, f_simple_pot_G, param, int_param, tmp);
+        ff = tmp[0];
+    }
+}
+
+#endif // _INTEGRALS_ANALYTIC_H_

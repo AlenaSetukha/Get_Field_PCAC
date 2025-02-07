@@ -24,19 +24,19 @@
  * в зависимости от применимости.
  */
 
-class Num_Par
-{
+class Num_Par {
 public:
     double eps, rs, rs_seg;
     int n_start_seg, n_start, p_max, p_max_seg, k;
     double T, dt;
     double kappa, M;
 
-    Num_Par();
+    Num_Par() = default;
     Num_Par(const std::string &filename);
     Num_Par(const double eps_in, const double rs_in, const double rs_seg_in,
             const int n_start_in, const int n_start_seg_in, const int p_max_in,
             const int p_max_seg_in);
     Num_Par(const Num_Par& obj);
+    ~Num_Par() = default;
 };
-#endif
+#endif // _NUM_PAR_H_

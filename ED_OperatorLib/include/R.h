@@ -4,17 +4,18 @@
 #include <iostream>
 #include <complex>
 
-#include "integral_par.h"
-#include "f_par.h"
+#include "Integral_Par.h"
+#include "Kernel_Par.h"
+#include "Num_Par.h"
 #include "kernel_lib.h"
 #include "element_geom.h"
-#include "Num_Par.h"
-#include "constants.h"
+#include "Constants.h"
+#include "integral_universal_pnt.h"
 
 
 
 //===============================================================================================
-//------------------Вычисление оператора R = rot в дальней зоне----------------------------------
+//-----------------Вычисление оператора R = rot со сглаживанием----------------------------------
 //===============================================================================================
 /**
  * R[sigma[j], tau[j]] = -j x surf_int(gradF), F = eikr/r
@@ -27,11 +28,11 @@
  *      res - результирующий вектор
  * 
  * num_param.rs - сглаживание для пов. интеграла
- * относительно diam текущей ячейки(~0.5-1)
+ * относительно ячейки второго уровня(~0.5-2)
 */
 
 template<size_t CellPoints>
-void R_rot_Far(const std::complex<double>* j, const double* x,
+void R_rot(const std::complex<double>* j, const double* x,
         const double (&rut0)[CellPoints][3],
         const Num_Par& num_param,
         const std::complex<double> k,
@@ -39,8 +40,8 @@ void R_rot_Far(const std::complex<double>* j, const double* x,
 {
     std::complex<double> cur_res3[3]{};
     // Инициализация параметров
-    f_par param(num_param.rs * get_diam(rut0), k);
-    integral_par int_parGradF(3, num_param.n_start, num_param.p_max, num_param.eps);
+    Kernel_Par param(num_param.rs * get_diam(rut0) / num_param.n_start, k);
+    Integral_Par int_parGradF(3, num_param.n_start, num_param.p_max, num_param.eps);
 
     integral_universal_pnt(x, rut0, f_grad_simple_pot_G, param, int_parGradF, cur_res3);
     vec_prod(cur_res3, j, res);
@@ -78,14 +79,13 @@ void R_rot_Colloc(const std::complex<double>* j,
 {
     double y[3];
     get_center_mass(rut0, y);
-    if (dist(x, y) < Constants::machine_zero) // i = j
-    {
+    if (dist(x, y) < Constants::machine_zero) { // i == j
         res[0] = 0., res[1] = 0., res[2] = 0.;
     } else {
         std::complex<double> cur_res3[3]{};
         // Инициализация параметров
-        f_par param(Constants::machine_zero, k);
-        integral_par int_parGradF(3, num_param.n_start, num_param.p_max, num_param.eps);
+        Kernel_Par param(Constants::machine_zero, k);
+        Integral_Par int_parGradF(3, num_param.n_start, num_param.p_max, num_param.eps);
 
         integral_universal_pnt(x, rut0, f_grad_simple_pot_G, param, int_parGradF, cur_res3);
         vec_prod(cur_res3, j, res);

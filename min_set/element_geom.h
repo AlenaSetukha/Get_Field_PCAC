@@ -44,6 +44,10 @@ double tr_square(const double* pnt_1, const double* pnt_2, const double* pnt_3);
 //==Quadr square==
 double quadr_square(const double* a, const double* b, const double* c, const double* d);
 
+//====Cell sqaure=====
+double cell_square(const double (&rut0)[4][3]);
+double cell_square(const double (&rut0)[3][3]);
+
 
 //==Solid angle==
 double solid_angle(const double* x_a, const double* x_b, const double* x_c, const double* x);
@@ -84,13 +88,13 @@ int check_points_match(const double* a, const double* b);
 
 
 //==Distance btw 2 points(vectors)==
-static inline double sqr(const double x) { return x * x; }
 template <typename T>
 T dist(const T* vec_1, const T* vec_2)
 {
-    return sqrt(sqr(vec_1[0] - vec_2[0]) +
-                sqr(vec_1[1] - vec_2[1]) +
-                sqr(vec_1[2] - vec_2[2]));
+    T res = sqrt((vec_1[0] - vec_2[0]) * (vec_1[0] - vec_2[0]) +
+        (vec_1[1] - vec_2[1]) * (vec_1[1] - vec_2[1]) +
+        (vec_1[2] - vec_2[2]) * (vec_1[2] - vec_2[2]));
+    return res;
 }
 
 
@@ -98,8 +102,9 @@ T dist(const T* vec_1, const T* vec_2)
 template <typename T>
 double vec_length(const T* vec_1)
 {
-    return sqrt(sqr(std::abs(vec_1[0])) +
-                sqr(std::abs(vec_1[1])) +
-                sqr(std::abs(vec_1[2])));
+    return sqrt(std::abs(vec_1[0]) * std::abs(vec_1[0]) +
+                std::abs(vec_1[1]) * std::abs(vec_1[1]) +
+                std::abs(vec_1[2]) * std::abs(vec_1[2]));
 }
-#endif
+
+#endif // _ELEMENT_GEOM_H_

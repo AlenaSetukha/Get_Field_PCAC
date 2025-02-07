@@ -4,14 +4,16 @@
 #include <iostream>
 #include <complex>
 
-#include "integral_par.h"
-#include "f_par.h"
+#include "Integral_Par.h"
+#include "Kernel_Par.h"
 #include "integral_universal_pnt.h"
-#include "k0.h"
+#include "K0.h"
 #include "kernel_lib.h"
 #include "integrals_analytic.h"
 #include "Num_Par.h"
 
+
+#include "element_geom.h"
 
 //===============================================================================================
 //------------------------Оператор  K = rotrot в дальней зоне------------------------------------
@@ -29,23 +31,23 @@
  *      num_param - численные параметры(для интегрирования) дальней зоны
  *      res[3] - результирующий вектор
  * 
- * num_param.rs - сглаживание относительно diam текущей ячейки(~0.5-1)
+ * num_param.rs - радиус сглаживания интеграла
+ * относительно размера ячеки второго уровня (~0.5 - 2) 
  */
-
 
 template<size_t CellPoints>
 void K_rot_rot_Far(const std::complex<double>* j, const double* x,
         const double (&rut0)[CellPoints][3],
-        const std::complex<double> k,
-        const Num_Par& num_param,
+        const Num_Par& num_param, const std::complex<double> k, 
         std::complex<double>* res)
 {
     // Инициализация параметров
-    f_par param(num_param.rs * get_diam(rut0), k);
-    integral_par int_parF(3, num_param.n_start, num_param.p_max, num_param.eps);
-    param.vec_cmplx[0] = j[0], param.vec_cmplx[1] = j[1], param.vec_cmplx[2] = j[2];
+    Kernel_Par param_KFar(num_param.rs * get_diam(rut0) / num_param.n_start, k);
+    Integral_Par int_parF(3, num_param.n_start, num_param.p_max, num_param.eps);
 
-    integral_universal_pnt(x, rut0, f_KFar, param, int_parF, res);
+    param_KFar.vec_cmplx[0] = j[0], param_KFar.vec_cmplx[1] = j[1], param_KFar.vec_cmplx[2] = j[2];
+
+    integral_universal_pnt(x, rut0, f_KFar, param_KFar, int_parF, res);
 }
 
 
@@ -65,43 +67,41 @@ void K_rot_rot_Far(const std::complex<double>* j, const double* x,
  *      j[3] - ток на ячейке
  *      x[3] - точка расчета
  *      rut0[4/3][3] - ячейка(четырехугольная или треугольная)
- *      norm[3] - нормаль к ячейке
  *      num_param - численные параметры(для интегралов)
  *      res[3] - результирующий вектор
  * 
- * rs/rs_seg - радиус сглаживания пов/крив интегралов относительно
- * (diamj / n_start), (~0.5 - 2)
+ * rs/rs_seg - радиус сглаживания пов/крив интегралов
+ * относительно размера ячеки второго уровня (~0.5 - 2) 
  */
 
 template<size_t CellPoints>
 void K_rot_rot(const std::complex<double>* j, const double* x,
-        const double (&rut0)[CellPoints][3], const double* norm,
-        const Num_Par& num_param,
-        const std::complex<double> k,
+        const double (&rut0)[CellPoints][3],
+        const Num_Par& num_param, const std::complex<double> k,
         std::complex<double>* res)
 {
     // Инициализация параметров
-    f_par param(num_param.rs * get_diam(rut0) / num_param.n_start, k);
-    f_par param_seg(num_param.rs_seg * get_diam(rut0) / num_param.n_start_seg, k);
-    integral_par int_parF(1, num_param.n_start, num_param.p_max, num_param.eps);
-    integral_par  int_parGradF(3, num_param.n_start_seg, num_param.p_max_seg, num_param.eps);
+    Kernel_Par param_F(num_param.rs * get_diam(rut0) / num_param.n_start, k);
+    Kernel_Par param_GradF(num_param.rs_seg * get_diam(rut0) / num_param.n_start_seg, k);
+    Integral_Par int_parF(1, num_param.n_start, num_param.p_max, num_param.eps);
+    Integral_Par  int_parGradF(3, num_param.n_start_seg, num_param.p_max_seg, num_param.eps);
 
     //k^2
     std::complex<double> cur_res[1];
-    integral_universal_pnt(x, rut0, f_simple_pot_G, param, int_parF, cur_res);
+    integral_universal_pnt(x, rut0, f_simple_pot_G, param_F, int_parF, cur_res);
 
-    std::complex<double> tmp = cur_res[0] * param.k * param.k;
+
+    std::complex<double> tmp = cur_res[0] * param_F.k * param_F.k;
     res[0] = tmp * j[0];
     res[1] = tmp * j[1];
     res[2] = tmp * j[2];
 
     //grad div
     std::complex<double> cur_res3[3];
-    k0(j, x, norm, rut0, f_grad_simple_pot_G, param_seg, int_parGradF, cur_res3);
-
-    res[0] += cur_res3[0];
-    res[1] += cur_res3[1];
-    res[2] += cur_res3[2];
+    K0(j, x, rut0, f_grad_simple_pot_G, param_GradF, int_parGradF, cur_res3);
+    res[0] -= cur_res3[0];
+    res[1] -= cur_res3[1];
+    res[2] -= cur_res3[2];
 }    
 
 
@@ -123,18 +123,38 @@ void K_rot_rot(const std::complex<double>* j, const double* x,
  *      j[3] - ток на ячейке
  *      x[3] - точка расчета
  *      rut0[4][3] - четырехугольная ячейка
- *      norm[3] - нормаль к ячейке
  *      k - волновое число
  *      num_param - численные параметры для интегрирования
  *      res[3] - результирующий вектор
  * 
- * num_param.rs/rs_seg - в долях от  (diamj / n_start) (~0.5-1)
+ * num_param.rs/rs_seg - радиус сглаживания пов/крив интегралов
+ * относительно размера ячеки второго уровня (~0.5 - 2)
  */
-
+template<size_t CellPoints>
 void K_rot_rot_Near(const std::complex<double>* j, const double* x,
-        const double (&rut0)[4][3], const double* norm,
-        const std::complex<double> k, const Num_Par& num_param,
-        std::complex<double>* res);
+        const double (&rut0)[CellPoints][3],
+        const Num_Par& num_param, const std::complex<double> k,
+        std::complex<double>* res)
+{
+    // k^2 с выделением особенности
+    Kernel_Par param(num_param.rs * get_diam(rut0) / num_param.n_start, k);
+    Integral_Par  int_parF(1, num_param.n_start, num_param.p_max, num_param.eps);
+    param.calc_dist = 3. * get_diam(rut0); // когда считать аналитически
+    
+    std::complex<double> cur_res;
+    integral_simple_pot_G(x, rut0, param, int_parF, cur_res);
+    for (int i = 0; i < 3; i++) {
+        res[i] = cur_res * k * k * j[i];
+    }
 
+    // -curv
+    std::complex<double> res3[3];
+    Kernel_Par param_seg(num_param.rs_seg * get_diam(rut0) / num_param.n_start_seg, k);
+    Integral_Par  int_parGradF(3, num_param.n_start_seg, num_param.p_max_seg, num_param.eps);
+    K0(j, x, rut0, f_grad_simple_pot_G, param_seg, int_parGradF, res3);
+    for (int i = 0; i < 3; i++) {
+        res[i] -= res3[i];
+    }
+}
 
-#endif
+#endif // _K_H_
