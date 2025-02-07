@@ -15,7 +15,8 @@
 
 #include "common_type.h"
 #include "E0.h"
-#include "get_field.h"
+#include "K.h"
+#include "R.h"
 #include "ED_Par.h"
 #include "Num_Par.h"
 #include "write_to_file.h"
@@ -23,7 +24,20 @@
 #include "get_hinc.h"
 
 
-//Тестовый расчет электромагнитного поля 
+/**
+ * Тестовый расчет электромагнитного поля. Выбирается расчетная сетка, в которой
+ * мы хотим посчитать поле.
+ * Электрические и магнитные токи задаются на ячейках разбиения поверхности как:
+ *                  j_E(x_i) = -n x H_inc(x_i)
+ *                  j_M(x_i) =  n x E_inc
+ * 
+ * Поле в заданных точках вычисляется двумя способами: 
+ *      - в лоб: E(x) = E_inc(x)
+ *      - по формулам Стреттона-Чу
+ * Ответ: поле по формулам С-Ч должно получиться E_inc внутри области пересечения с
+ * объектом(например, со сферой), вне - ноль.
+ */ 
+
 
 
 int main(int argc, char **argv)
@@ -127,8 +141,6 @@ int main(int argc, char **argv)
                     (ed_param.omega0 * ed_param.mu_d[0] * Constants::m0);
 
 
-    Num_Par num_param(0.00001, 1.5, 1.5, 8, 10, 2, 2);
-
     for (int i = 0; i < num_points; i++) {
         sum_KE[0] = 0., sum_KE[1] = 0., sum_KE[2] = 0.;
         sum_RE[0] = 0., sum_RE[1] = 0., sum_RE[2] = 0.;
@@ -139,48 +151,51 @@ int main(int argc, char **argv)
             // Поле E
             double pnt_dist = dist(points_for_field[i], a.cell_list[j].rkt);
             if (pnt_dist > 3. * a.grid_step) { // Если точка далеко от поверхности
+
+                Num_Par num_param_Far(0.00001, 3., 3., 4, 6, 1, 1);
                 K_rot_rot_Far(j_E[j], points_for_field[i], a.cell_list[j].cell,
-                                num_param, ed_param.k[0], cur_res3);
+                                num_param_Far, ed_param.k[0], cur_res3);
                 sum_KE[0] += cur_res3[0];
                 sum_KE[1] += cur_res3[1];
                 sum_KE[2] += cur_res3[2];
 
-                R_rot(j_M[j], points_for_field[i], a.cell_list[j].cell, num_param, ed_param.k[0], cur_res3);
+                R_rot(j_M[j], points_for_field[i], a.cell_list[j].cell, num_param_Far, ed_param.k[0], cur_res3);
                 sum_RE[0] += cur_res3[0];
                 sum_RE[1] += cur_res3[1];
                 sum_RE[2] += cur_res3[2];
 
                 // Поле H
                 K_rot_rot_Far(j_M[j], points_for_field[i], a.cell_list[j].cell,
-                                num_param, ed_param.k[0], cur_res3);
+                                num_param_Far, ed_param.k[0], cur_res3);
                 sum_KH[0] += cur_res3[0];
                 sum_KH[1] += cur_res3[1];
                 sum_KH[2] += cur_res3[2];
 
-                R_rot(j_E[j], points_for_field[i], a.cell_list[j].cell, num_param, ed_param.k[0], cur_res3);
+                R_rot(j_E[j], points_for_field[i], a.cell_list[j].cell, num_param_Far, ed_param.k[0], cur_res3);
                 sum_RH[0] += cur_res3[0];
                 sum_RH[1] += cur_res3[1];
                 sum_RH[2] += cur_res3[2];
             } else { // если точка близко к поверхности
+                Num_Par num_param_Near(0.00001, 1.5, 1.5, 8, 10, 4, 4);
                 K_rot_rot_Near(j_E[j], points_for_field[i], a.cell_list[j].cell,
-                                num_param, ed_param.k[0], cur_res3);
+                                num_param_Near, ed_param.k[0], cur_res3);
                 sum_KE[0] += cur_res3[0];
                 sum_KE[1] += cur_res3[1];
                 sum_KE[2] += cur_res3[2];
 
-                R_rot(j_M[j], points_for_field[i], a.cell_list[j].cell, num_param, ed_param.k[0], cur_res3);
+                R_rot(j_M[j], points_for_field[i], a.cell_list[j].cell, num_param_Near, ed_param.k[0], cur_res3);
                 sum_RE[0] += cur_res3[0];
                 sum_RE[1] += cur_res3[1];
                 sum_RE[2] += cur_res3[2];
 
                 // Поле H
                 K_rot_rot_Near(j_M[j], points_for_field[i], a.cell_list[j].cell,
-                                num_param, ed_param.k[0], cur_res3);
+                                num_param_Near, ed_param.k[0], cur_res3);
                 sum_KH[0] += cur_res3[0];
                 sum_KH[1] += cur_res3[1];
                 sum_KH[2] += cur_res3[2];
 
-                R_rot(j_E[j], points_for_field[i], a.cell_list[j].cell, num_param, ed_param.k[0], cur_res3);
+                R_rot(j_E[j], points_for_field[i], a.cell_list[j].cell, num_param_Near, ed_param.k[0], cur_res3);
                 sum_RH[0] += cur_res3[0];
                 sum_RH[1] += cur_res3[1];
                 sum_RH[2] += cur_res3[2];

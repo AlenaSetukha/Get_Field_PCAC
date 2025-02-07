@@ -47,7 +47,7 @@ add_library(pcac_lib STATIC ${SOURCE})
 
 
 
-add_executable(test_PCAC ./tests/ED_Operators/main_K.cpp)
+add_executable(test_PCAC ./tests/field/main_field.cpp)
 
 if(OPENMP_FOUND)
     target_link_libraries(test_PCAC PUBLIC OpenMP::OpenMP_CXX)
