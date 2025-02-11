@@ -9,8 +9,15 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 #compiler flags
-set(CMAKE_CXX_FLAGS_DEBUG "-Og -g -Wall -Wextra -pedantic -fsanitize=leak, -fsanitize=undefinded, -fsanitize=memory")
-set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -flto -march=native")
+set(CMAKE_CXX_FLAGS_DEBUG "-Og -g -Wall -Wextra -pedantic -fsanitize=leak, -fsanitize=undefined, -fsanitize=address")
+set(CMAKE_CXX_FLAGS_RELEASE "-flto -march=native")
+
+
+### Компиляция с флагами: $ cmake -DCMAKE_BUILD_TYPE=Debug ..
+### set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -flto -march=native")
+
+
+
 
 # packages
 find_package(OpenMP QUIET)
